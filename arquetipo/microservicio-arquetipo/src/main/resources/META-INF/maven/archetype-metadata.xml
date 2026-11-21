@@ -8,6 +8,7 @@
               clases: Libro, LibroService, LibroController, LibroFactory, ...
     recurso : ruta REST en plural (ej: libros) -> /libros
     tabla   : nombre de la tabla en Oracle (ej: LIBROS)
+    puerto  : puerto HTTP del microservicio (por defecto 8080)
   Además de los estándar de Maven: groupId, artifactId, version y package.
 -->
 <archetype-descriptor xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.2.0 https://maven.apache.org/xsd/archetype-descriptor-1.2.0.xsd" name="microservicio-arquetipo"
@@ -23,6 +24,10 @@
     </requiredProperty>
     <requiredProperty key="tabla">
       <validationRegex>^[A-Z][A-Z0-9_]*$</validationRegex>
+    </requiredProperty>
+    <requiredProperty key="puerto">
+      <defaultValue>8080</defaultValue>
+      <validationRegex>^[0-9]{2,5}$</validationRegex>
     </requiredProperty>
   </requiredProperties>
 
@@ -56,6 +61,14 @@
     <fileSet filtered="true" encoding="UTF-8">
       <includes>
         <include>README.md</include>
+        <include>Dockerfile</include>
+      </includes>
+    </fileSet>
+    <!-- Colección Postman con el CRUD de la entidad -->
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>postman</directory>
+      <includes>
+        <include>**/*.json</include>
       </includes>
     </fileSet>
     <!-- Archivos que se copian tal cual (sin filtrar) -->
@@ -63,7 +76,6 @@
       <includes>
         <include>.dockerignore</include>
         <include>gitignore</include>
-        <include>Dockerfile</include>
         <include>mvnw</include>
         <include>mvnw.cmd</include>
       </includes>
