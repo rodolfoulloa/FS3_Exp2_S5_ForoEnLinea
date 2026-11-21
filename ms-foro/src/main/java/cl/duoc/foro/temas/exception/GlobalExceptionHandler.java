@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
         return responder(HttpStatus.NOT_FOUND, ex.getMessage(), null);
     }
 
+    /** 410 cuando el tema o comentario fue baneado por moderación. */
+    @ExceptionHandler(ContenidoNoDisponibleException.class)
+    public ResponseEntity<ErrorResponse> manejarNoDisponible(ContenidoNoDisponibleException ex) {
+        return responder(HttpStatus.GONE, ex.getMessage(), null);
+    }
+
     /** 409 cuando la operación choca con datos existentes (ej: valor único repetido). */
     @ExceptionHandler(ConflictoException.class)
     public ResponseEntity<ErrorResponse> manejarConflicto(ConflictoException ex) {
