@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
         return responder(HttpStatus.NOT_FOUND, ex.getMessage(), null);
     }
 
+    /** 401 cuando las credenciales no coinciden. */
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorResponse> manejarCredenciales(CredencialesInvalidasException ex) {
+        return responder(HttpStatus.UNAUTHORIZED, ex.getMessage(), null);
+    }
+
     /** 409 cuando la operación choca con datos existentes (ej: valor único repetido). */
     @ExceptionHandler(ConflictoException.class)
     public ResponseEntity<ErrorResponse> manejarConflicto(ConflictoException ex) {

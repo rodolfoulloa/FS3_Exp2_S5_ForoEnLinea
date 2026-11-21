@@ -95,8 +95,11 @@ public abstract class AbstractCrudService<T extends Identificable<ID>, ID> imple
         notificar(TipoEvento.ELIMINADO, id);
     }
 
-    /** Publica el evento para los observadores (patrón Observer). */
-    private void notificar(TipoEvento tipo, ID id) {
+    /**
+     * Publica el evento para los observadores (patrón Observer). Es protegido
+     * para que las subclases notifiquen también sus operaciones propias.
+     */
+    protected void notificar(TipoEvento tipo, ID id) {
         publicadorEventos.publishEvent(EventoEntidad.de(tipo, nombreRecurso(), id));
     }
 }
