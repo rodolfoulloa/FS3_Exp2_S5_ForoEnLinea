@@ -3,7 +3,10 @@
 
   Uso (PowerShell, desde la raíz del repositorio):
     docker login
-    .\scripts\publicar-imagenes.ps1 -Usuario tu_usuario_dockerhub -Version 1.0.0
+    powershell -ExecutionPolicy Bypass -File .\scripts\publicar-imagenes.ps1 -Usuario tu_usuario_dockerhub -Version 1.0.0
+
+  -ExecutionPolicy Bypass permite ejecutar este script solo en esa llamada, sin cambiar
+  la política de ejecución de Windows (que por defecto bloquea los .ps1).
 
   Construye las 4 imágenes con docker compose y las sube con dos etiquetas:
   la versión indicada y "latest".

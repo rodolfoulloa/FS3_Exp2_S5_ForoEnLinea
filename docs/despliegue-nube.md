@@ -23,8 +23,10 @@ Requisito: una cuenta en [hub.docker.com](https://hub.docker.com) y Docker Deskt
 
 ```powershell
 docker login
-.\scripts\publicar-imagenes.ps1 -Usuario rodolfoulloa -Version 1.0.0
+powershell -ExecutionPolicy Bypass -File .\scripts\publicar-imagenes.ps1 -Usuario rodolfoulloa -Version 1.0.0
 ```
+
+`-ExecutionPolicy Bypass` permite ejecutar el script solo en esa llamada, sin cambiar la política de ejecución de Windows. Sin esa opción, PowerShell responde *"la ejecución de scripts está deshabilitada en este sistema"*.
 
 Se publican 4 imágenes, cada una con las etiquetas `1.0.0` y `latest`:
 
