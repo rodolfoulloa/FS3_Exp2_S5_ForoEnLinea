@@ -4,7 +4,7 @@ Grabación en **Kaltura**, mostrando todo **en tiempo real**. El video debe cubr
 
 ## Antes de grabar (checklist)
 
-- [ ] Imágenes publicadas en Docker Hub (`.\scripts\publicar-imagenes.ps1 -Usuario TU_USUARIO`).
+- [ ] Imágenes publicadas en Docker Hub (`.\scripts\publicar-imagenes.ps1 -Usuario rodolfoulloa`).
 - [ ] Sesión de **Play with Docker** con los 4 contenedores corriendo (`docker compose -f docker-compose.cloud.yml ps`). Ver [despliegue-nube.md](despliegue-nube.md).
 - [ ] URLs públicas copiadas en el entorno **Ágora · Nube** de Postman.
 - [ ] Colecciones y entorno importados en Postman.

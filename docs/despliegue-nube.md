@@ -17,21 +17,23 @@ flowchart LR
 
 ## 1. Publicar las imágenes en Docker Hub (desde el PC)
 
+> Ya publicadas en **https://hub.docker.com/u/rodolfoulloa** (`agora-ms-usuarios`, `agora-ms-foro`, `agora-ms-moderacion` y `agora-frontend`, etiquetas `1.0.0` y `latest`), todas públicas.
+
 Requisito: una cuenta en [hub.docker.com](https://hub.docker.com) y Docker Desktop.
 
 ```powershell
 docker login
-.\scripts\publicar-imagenes.ps1 -Usuario TU_USUARIO -Version 1.0.0
+.\scripts\publicar-imagenes.ps1 -Usuario rodolfoulloa -Version 1.0.0
 ```
 
 Se publican 4 imágenes, cada una con las etiquetas `1.0.0` y `latest`:
 
 | Imagen | Puerto | Contenido |
 |---|---|---|
-| `TU_USUARIO/agora-ms-usuarios` | 8081 | Microservicio de usuarios (JRE 21) |
-| `TU_USUARIO/agora-ms-foro` | 8082 | Microservicio del foro |
-| `TU_USUARIO/agora-ms-moderacion` | 8083 | Microservicio de moderación |
-| `TU_USUARIO/agora-frontend` | 80 | Angular compilado servido con nginx |
+| `rodolfoulloa/agora-ms-usuarios` | 8081 | Microservicio de usuarios (JRE 21) |
+| `rodolfoulloa/agora-ms-foro` | 8082 | Microservicio del foro |
+| `rodolfoulloa/agora-ms-moderacion` | 8083 | Microservicio de moderación |
+| `rodolfoulloa/agora-frontend` | 80 | Angular compilado servido con nginx |
 
 Las imágenes **no contienen credenciales**: el wallet y la contraseña de Oracle se entregan al momento de ejecutar (volumen y `.env`).
 
@@ -53,7 +55,7 @@ Las imágenes **no contienen credenciales**: el wallet y la contraseña de Oracl
    DB_SERVICE=fs3db_tp
    DB_USER=ADMIN
    DB_PASSWORD=tu_clave
-   DOCKERHUB_USER=TU_USUARIO
+   DOCKERHUB_USER=rodolfoulloa
    VERSION=1.0.0
    FIN
    ```

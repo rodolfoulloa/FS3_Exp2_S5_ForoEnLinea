@@ -10,6 +10,7 @@ DSY2205 Desarrollo Full Stack III · Experiencia 2 · Semana 5 · Actividad suma
 
 | Versión | Fecha | Contenido |
 |---|---|---|
+| `v1.0.1` | 2026-11-21 | Imágenes publicadas en [Docker Hub](https://hub.docker.com/u/rodolfoulloa) y corrección del script de publicación |
 | `v1.0.0` | 2026-11-21 | Entrega de la semana 5 (ver [CHANGELOG](CHANGELOG.md)) |
 | `arquetipo-1.1.0` | 2026-11-21 | Arquetipo Maven usado para generar los 3 microservicios |
 
@@ -215,7 +216,7 @@ npx newman run ms-foro\postman\ms-foro.postman_collection.json -e postman\agora-
 |---|---|
 | `*/Dockerfile` | Microservicios: multi-etapa (Maven → JRE 21). Frontend: multi-etapa (Node 22 → nginx con fallback de SPA) |
 | `docker-compose.yml` | Construye y levanta los 4 contenedores en local (`docker compose up --build`) |
-| `scripts/publicar-imagenes.ps1` | Construye y publica las 4 imágenes en **Docker Hub** (Container Registry) |
+| `scripts/publicar-imagenes.ps1` | Construye y publica las 4 imágenes en **Docker Hub** (Container Registry): [`rodolfoulloa/agora-*`](https://hub.docker.com/u/rodolfoulloa) |
 | `docker-compose.cloud.yml` | Ejecuta las imágenes de Docker Hub en la nube, con memoria acotada para instancias pequeñas |
 
 El paso a paso para publicar en Docker Hub y ejecutar en **Play with Docker** con URLs públicas está en [docs/despliegue-nube.md](docs/despliegue-nube.md). Las imágenes no contienen credenciales: el wallet se monta como volumen y la clave se entrega por `.env`.
