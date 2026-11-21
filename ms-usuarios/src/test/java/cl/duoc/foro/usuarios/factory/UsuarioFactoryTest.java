@@ -2,38 +2,52 @@ package cl.duoc.foro.usuarios.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cl.duoc.foro.usuarios.dto.RegistroRequest;
 import cl.duoc.foro.usuarios.dto.UsuarioRequest;
 import cl.duoc.foro.usuarios.dto.UsuarioResponse;
+import cl.duoc.foro.usuarios.model.Rol;
 import cl.duoc.foro.usuarios.model.Usuario;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/** Pruebas del patrón Factory (y del Builder que usa internamente). */
+/** Patrón Factory (y Builder): normalización de datos y respuestas sin contraseña. */
 class UsuarioFactoryTest {
 
     private final UsuarioFactory factory = new UsuarioFactory();
+    private final Rol rolUsuario = new Rol(Rol.USUARIO, "Usuario");
 
     @Test
-    void crearEntidad_construyeLaEntidadSinIdYConTextosLimpios() {
-        Usuario entidad = factory.crearEntidad(new UsuarioRequest("  Ejemplo  "));
+    void crearDesdeRegistro_normalizaLosDatosYAsignaElRol() {
+        RegistroRequest req = new RegistroRequest("  Ana Prueba ", " ana.prueba ", " Ana@Correo.CL ",
+                "Prueba#2025", "Prueba#2025", true);
 
-        assertThat(entidad.getId()).isNull();
-        assertThat(entidad.getNombre()).isEqualTo("Ejemplo");
+        Usuario u = factory.crearDesdeRegistro(req, rolUsuario, "hash");
+
+        assertThat(u.getId()).isNull();
+        assertThat(u.getNombre()).isEqualTo("Ana Prueba");
+        assertThat(u.getAlias()).isEqualTo("ana.prueba");
+        assertThat(u.getEmail()).isEqualTo("ana@correo.cl");
+        assertThat(u.getPasswordHash()).isEqualTo("hash");
+        assertThat(u.getRol()).isSameAs(rolUsuario);
+        assertThat(u.getActivo()).isTrue();
+        assertThat(u.getFechaRegistro()).isNotNull();
     }
 
     @Test
-    void crearRespuesta_copiaTodosLosAtributos() {
-        Usuario entidad = Usuario.builder().id(5L).nombre("Ejemplo").build();
+    void crearDatosPerfil_dejaLaBiografiaVaciaComoNula() {
+        Usuario datos = factory.crearDatosPerfil(new UsuarioRequest("Vale", "vale", "V@C.CL", "   "));
 
-        assertThat(factory.crearRespuesta(entidad)).isEqualTo(new UsuarioResponse(5L, "Ejemplo"));
+        assertThat(datos.getBiografia()).isNull();
+        assertThat(datos.getEmail()).isEqualTo("v@c.cl");
     }
 
     @Test
-    void crearRespuestas_convierteCadaElemento() {
-        List<UsuarioResponse> respuestas = factory.crearRespuestas(List.of(
-                Usuario.builder().id(1L).nombre("A").build(),
-                Usuario.builder().id(2L).nombre("B").build()));
+    void crearRespuesta_incluyeElRolYNuncaLaContrasena() {
+        Usuario u = Usuario.builder().id(3L).nombre("Vale").alias("vale").email("v@c.cl")
+                .passwordHash("secreto").rol(rolUsuario).build();
 
-        assertThat(respuestas).extracting(UsuarioResponse::id).containsExactly(1L, 2L);
+        UsuarioResponse r = factory.crearRespuesta(u);
+
+        assertThat(r.rol()).isEqualTo("USUARIO");
+        assertThat(r.toString()).doesNotContain("secreto");
     }
 }
