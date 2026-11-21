@@ -13,5 +13,5 @@ WORKDIR /app
 COPY --from=build /build/target/*.jar app.jar
 # El wallet de Oracle se monta como volumen en /app/wallet (ver docker-compose.yml)
 ENV TNS_ADMIN=/app/wallet
-EXPOSE 8080
+EXPOSE ${puerto}
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
