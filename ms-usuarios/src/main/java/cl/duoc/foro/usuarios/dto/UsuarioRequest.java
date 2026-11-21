@@ -1,14 +1,28 @@
 package cl.duoc.foro.usuarios.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
- * DTO de entrada (body de POST y PUT). Contiene las validaciones de los datos
- * que envía el cliente; el ID no se recibe en el body.
+ * DTO para modificar el perfil (PUT /usuarios/{id}). No incluye la contraseña
+ * ni el rol: tienen endpoints propios.
  */
 public record UsuarioRequest(
         @NotBlank(message = "El nombre es obligatorio")
-        @Size(max = 200, message = "El nombre admite hasta 200 caracteres")
-        String nombre) {
+        @Pattern(regexp = Validaciones.NOMBRE, message = Validaciones.NOMBRE_MSG)
+        String nombre,
+
+        @NotBlank(message = "El alias es obligatorio")
+        @Pattern(regexp = Validaciones.ALIAS, message = Validaciones.ALIAS_MSG)
+        String alias,
+
+        @NotBlank(message = "El email es obligatorio")
+        @Email(message = "El email no tiene un formato válido")
+        @Size(max = 120, message = "El email admite hasta 120 caracteres")
+        String email,
+
+        @Size(max = 300, message = "La biografía admite hasta 300 caracteres")
+        String biografia) {
 }
