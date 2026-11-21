@@ -7,103 +7,124 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import cl.duoc.foro.moderacion.event.EventoEntidad;
-import cl.duoc.foro.moderacion.event.TipoEvento;
-import cl.duoc.foro.moderacion.exception.RecursoNoEncontradoException;
+import cl.duoc.foro.moderacion.client.UsuarioClient;
+import cl.duoc.foro.moderacion.dto.ModeracionDtos.ContenidoRemoto;
+import cl.duoc.foro.moderacion.dto.ModeracionDtos.ReporteRequest;
+import cl.duoc.foro.moderacion.dto.ModeracionDtos.UsuarioRemoto;
+import cl.duoc.foro.moderacion.exception.ConflictoException;
+import cl.duoc.foro.moderacion.exception.ReglaNegocioException;
+import cl.duoc.foro.moderacion.factory.ModeracionFactory;
+import cl.duoc.foro.moderacion.model.Enums.EstadoReporte;
+import cl.duoc.foro.moderacion.model.Enums.MotivoReporte;
+import cl.duoc.foro.moderacion.model.Enums.TipoContenido;
 import cl.duoc.foro.moderacion.model.Reporte;
 import cl.duoc.foro.moderacion.repository.ReporteRepository;
+import cl.duoc.foro.moderacion.strategy.ModeracionStrategy;
+import cl.duoc.foro.moderacion.strategy.ModeracionStrategyResolver;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-/**
- * Pruebas del servicio: el algoritmo del Template Method y la publicación de
- * eventos para los observadores (Observer).
- */
+/** Reglas de los reportes de contenido. */
 @ExtendWith(MockitoExtension.class)
 class ReporteServiceTest {
 
     @Mock
-    private ReporteRepository repositorio;
+    private ReporteRepository reporteRepository;
+
+    @Mock
+    private UsuarioClient usuarioClient;
+
+    @Mock
+    private ModeracionStrategy estrategiaTema;
 
     @Mock
     private ApplicationEventPublisher publicador;
 
     private ReporteService servicio;
+    private final UsuarioRemoto vale = new UsuarioRemoto(3L, "vale.soto", "USUARIO", true);
+    private final ReporteRequest request = new ReporteRequest(TipoContenido.TEMA, 20L, MotivoReporte.SPAM, null);
 
     @BeforeEach
     void setUp() {
-        servicio = new ReporteService(repositorio, publicador);
+        when(estrategiaTema.tipo()).thenReturn(TipoContenido.TEMA);
+        servicio = new ReporteService(reporteRepository, usuarioClient,
+                new ModeracionStrategyResolver(List.of(estrategiaTema)), new ModeracionFactory(), publicador);
     }
 
-    private EventoEntidad eventoPublicado() {
-        ArgumentCaptor<EventoEntidad> captor = ArgumentCaptor.forClass(EventoEntidad.class);
-        verify(publicador).publishEvent(captor.capture());
-        return captor.getValue();
-    }
-
-    @Test
-    void crear_ignoraElIdRecibido_guardaYPublicaEventoCreado() {
-        Reporte nuevo = Reporte.builder().id(77L).nombre("Nuevo").build();
-        when(repositorio.save(any(Reporte.class))).thenAnswer(inv -> {
-            Reporte i = inv.getArgument(0);
-            assertThat(i.getId()).isNull(); // el ID lo genera la BD
-            i.setId(1L);
-            return i;
-        });
-
-        Reporte creado = servicio.crear(nuevo);
-
-        assertThat(creado.getId()).isEqualTo(1L);
-        EventoEntidad evento = eventoPublicado();
-        assertThat(evento.tipo()).isEqualTo(TipoEvento.CREADO);
-        assertThat(evento.recurso()).isEqualTo("reporte");
-        assertThat(evento.id()).isEqualTo(1L);
+    private ContenidoRemoto tema(Long autorId, String estado) {
+        return new ContenidoRemoto(20L, "OFERTA: compra seguidores", "Texto", autorId, "mati.gamer", estado, null);
     }
 
     @Test
-    void actualizar_copiaLosDatosSobreElExistente_yPublicaEventoActualizado() {
-        Reporte existente = Reporte.builder().id(1L).nombre("Antes").build();
-        when(repositorio.findById(1L)).thenReturn(Optional.of(existente));
-        when(repositorio.save(existente)).thenReturn(existente);
+    void reportar_guardaElReportePendienteConElResumen() {
+        when(usuarioClient.obtenerActivo(3L)).thenReturn(vale);
+        when(estrategiaTema.obtener(20L)).thenReturn(tema(4L, "ACTIVO"));
+        when(reporteRepository.save(any(Reporte.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Reporte resultado = servicio.actualizar(1L, Reporte.builder().nombre("Después").build());
+        Reporte r = servicio.reportar(request, 3L);
 
-        assertThat(resultado.getId()).isEqualTo(1L);
-        assertThat(resultado.getNombre()).isEqualTo("Después");
-        assertThat(eventoPublicado().tipo()).isEqualTo(TipoEvento.ACTUALIZADO);
+        assertThat(r.getEstado()).isEqualTo(EstadoReporte.PENDIENTE);
+        assertThat(r.getResumenContenido()).isEqualTo("OFERTA: compra seguidores");
+        assertThat(r.getReportanteAlias()).isEqualTo("vale.soto");
     }
 
     @Test
-    void obtenerPorId_inexistente_lanza404() {
-        when(repositorio.findById(99L)).thenReturn(Optional.empty());
+    void reportar_contenidoPropio_lanzaReglaDeNegocio() {
+        when(usuarioClient.obtenerActivo(3L)).thenReturn(vale);
+        when(estrategiaTema.obtener(20L)).thenReturn(tema(3L, "ACTIVO"));
 
-        assertThatThrownBy(() -> servicio.obtenerPorId(99L))
-                .isInstanceOf(RecursoNoEncontradoException.class)
-                .hasMessage("No existe un reporte con ID 99");
+        assertThatThrownBy(() -> servicio.reportar(request, 3L)).hasMessage("No puede reportar su propio contenido");
     }
 
     @Test
-    void eliminar_existente_borraYPublicaEventoEliminado() {
-        when(repositorio.existsById(1L)).thenReturn(true);
+    void reportar_contenidoBaneado_lanzaReglaDeNegocio() {
+        when(usuarioClient.obtenerActivo(3L)).thenReturn(vale);
+        when(estrategiaTema.obtener(20L)).thenReturn(tema(4L, "BANEADO"));
 
-        servicio.eliminar(1L);
-
-        verify(repositorio).deleteById(1L);
-        assertThat(eventoPublicado().tipo()).isEqualTo(TipoEvento.ELIMINADO);
+        assertThatThrownBy(() -> servicio.reportar(request, 3L)).isInstanceOf(ReglaNegocioException.class);
     }
 
     @Test
-    void eliminar_inexistente_lanza404YNoPublicaEventos() {
-        when(repositorio.existsById(99L)).thenReturn(false);
+    void reportar_dosVecesElMismoContenido_lanza409() {
+        when(usuarioClient.obtenerActivo(3L)).thenReturn(vale);
+        when(estrategiaTema.obtener(20L)).thenReturn(tema(4L, "ACTIVO"));
+        when(reporteRepository.existsByTipoContenidoAndContenidoIdAndReportanteIdAndEstado(
+                TipoContenido.TEMA, 20L, 3L, EstadoReporte.PENDIENTE)).thenReturn(true);
 
-        assertThatThrownBy(() -> servicio.eliminar(99L)).isInstanceOf(RecursoNoEncontradoException.class);
-        verify(repositorio, never()).deleteById(any());
-        verify(publicador, never()).publishEvent(any(Object.class));
+        assertThatThrownBy(() -> servicio.reportar(request, 3L)).isInstanceOf(ConflictoException.class);
+        verify(reporteRepository, never()).save(any());
+    }
+
+    @Test
+    void descartar_reporteYaResuelto_lanzaReglaDeNegocio() {
+        Reporte r = Reporte.builder().contenido(TipoContenido.TEMA, 20L, "x").motivo(MotivoReporte.SPAM, null)
+                .reportante(3L, "vale.soto").build();
+        r.cerrar(EstadoReporte.RESUELTO, "camila.admin", "Baneado");
+        when(usuarioClient.exigirAdmin(1L)).thenReturn(new UsuarioRemoto(1L, "camila.admin", "ADMIN", true));
+        when(reporteRepository.findById(9L)).thenReturn(Optional.of(r));
+
+        assertThatThrownBy(() -> servicio.descartar(9L, "No incumple", 1L)).hasMessage("El reporte ya fue resuelto");
+    }
+
+    @Test
+    void resolverPendientes_cierraTodosLosReportesDelContenido() {
+        Reporte r1 = Reporte.builder().contenido(TipoContenido.TEMA, 20L, "x").motivo(MotivoReporte.SPAM, null)
+                .reportante(3L, "vale.soto").build();
+        Reporte r2 = Reporte.builder().contenido(TipoContenido.TEMA, 20L, "x").motivo(MotivoReporte.ACOSO, null)
+                .reportante(5L, "fer.cine").build();
+        when(reporteRepository.findByTipoContenidoAndContenidoIdAndEstado(TipoContenido.TEMA, 20L, EstadoReporte.PENDIENTE))
+                .thenReturn(List.of(r1, r2));
+
+        int resueltos = servicio.resolverPendientes(TipoContenido.TEMA, 20L, "camila.admin", "Baneado");
+
+        assertThat(resueltos).isEqualTo(2);
+        assertThat(List.of(r1, r2)).allMatch(r -> r.getEstado() == EstadoReporte.RESUELTO
+                && "camila.admin".equals(r.getResueltoPorAlias()));
     }
 }
