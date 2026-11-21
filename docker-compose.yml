@@ -1,0 +1,59 @@
+# Ágora · Sistema de Foros en Línea
+# Construye y levanta los 3 microservicios y el frontend desde el código fuente.
+#   docker compose up --build
+# Requiere .env (ver .env.example) y el wallet de Oracle en ./wallet
+services:
+  # Control de usuarios e inicio de sesión
+  ms-usuarios:
+    build: ./ms-usuarios
+    image: ${DOCKERHUB_USER:-agora}/agora-ms-usuarios:${VERSION:-1.0.0}
+    container_name: agora-ms-usuarios
+    env_file: .env
+    volumes:
+      - ./wallet:/app/wallet:ro
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  # Búsqueda, visualización, publicación y comentarios de temas
+  ms-foro:
+    build: ./ms-foro
+    image: ${DOCKERHUB_USER:-agora}/agora-ms-foro:${VERSION:-1.0.0}
+    container_name: agora-ms-foro
+    env_file: .env
+    environment:
+      MS_USUARIOS_URL: http://ms-usuarios:8081
+    volumes:
+      - ./wallet:/app/wallet:ro
+    ports:
+      - "8082:8082"
+    depends_on:
+      - ms-usuarios
+    restart: unless-stopped
+
+  # Gestión de publicaciones y comentarios por un administrador
+  ms-moderacion:
+    build: ./ms-moderacion
+    image: ${DOCKERHUB_USER:-agora}/agora-ms-moderacion:${VERSION:-1.0.0}
+    container_name: agora-ms-moderacion
+    env_file: .env
+    environment:
+      MS_USUARIOS_URL: http://ms-usuarios:8081
+      MS_FORO_URL: http://ms-foro:8082
+    volumes:
+      - ./wallet:/app/wallet:ro
+    ports:
+      - "8083:8083"
+    depends_on:
+      - ms-usuarios
+      - ms-foro
+    restart: unless-stopped
+
+  # Aplicación Angular (funciona por separado, con datos en arreglos)
+  frontend:
+    build: ./frontend
+    image: ${DOCKERHUB_USER:-agora}/agora-frontend:${VERSION:-1.0.0}
+    container_name: agora-frontend
+    ports:
+      - "4200:80"
+    restart: unless-stopped
