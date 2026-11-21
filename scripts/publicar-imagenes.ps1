@@ -12,7 +12,7 @@ param(
     [Parameter(Mandatory = $true)][string]$Usuario,
     [string]$Version = "1.0.0"
 )
-$ErrorActionPreference = "Stop"
+# Docker escribe su progreso en stderr: los errores se detectan con $LASTEXITCODE
 $env:DOCKERHUB_USER = $Usuario
 $env:VERSION = $Version
 
