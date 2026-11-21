@@ -1,0 +1,1098 @@
+{
+  "info": {
+    "name": "Ágora · ms-foro",
+    "description": "Microservicio de búsqueda, visualización, publicación y comentarios de temas (puerto 8082), contra Oracle Cloud.\n\nRequiere ms-usuarios en ejecución (valida autores y el rol ADMIN). Variables: autorId=3 (vale.soto), otroId=4 (mati.gamer) y adminId=1 (camila.admin), los usuarios de prueba de ms-usuarios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "autorId",
+      "value": "3"
+    },
+    {
+      "key": "otroId",
+      "value": "4"
+    },
+    {
+      "key": "adminId",
+      "value": "1"
+    },
+    {
+      "key": "temaId",
+      "value": ""
+    },
+    {
+      "key": "comentarioId",
+      "value": ""
+    },
+    {
+      "key": "baneadoId",
+      "value": ""
+    },
+    {
+      "key": "vistas",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Categorías",
+      "item": [
+        {
+          "name": "1.1 GET /categorias - Las 6 categorías",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const c = pm.response.json();",
+                  "pm.test('Al menos 5 categorías', () => pm.expect(c.length).to.be.at.least(5));",
+                  "pm.test('Cada una tiene nombre, ícono, color y cantidad de temas', () => c.forEach(x => pm.expect(x).to.include.keys('nombre', 'icono', 'color', 'temas')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categorias"
+          }
+        },
+        {
+          "name": "1.2 GET /categorias/1 - Una categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categorias/1"
+          }
+        },
+        {
+          "name": "1.3 GET /categorias/999 - Inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categorias/999"
+          }
+        }
+      ],
+      "description": "Las categorías de temas del foro."
+    },
+    {
+      "name": "2. Búsqueda y visualización",
+      "item": [
+        {
+          "name": "2.1 GET /temas - Temas activos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo temas ACTIVO', () => pm.response.json().forEach(t => pm.expect(t.estado).to.eql('ACTIVO')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas"
+          }
+        },
+        {
+          "name": "2.2 GET /temas?q=angular - Buscar por texto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Encuentra temas que mencionan Angular', () => pm.response.json().forEach(t => pm.expect((t.titulo + ' ' + t.contenido).toLowerCase()).to.include('angular')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas?q=angular"
+          }
+        },
+        {
+          "name": "2.3 GET /temas?categoriaId=2 - Filtrar por categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Todos de Videojuegos', () => pm.response.json().forEach(t => pm.expect(t.categoriaId).to.eql(2)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas?categoriaId=2"
+          }
+        },
+        {
+          "name": "2.4 GET /temas?estado=BANEADO - Sin ser ADMIN (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas?estado=BANEADO"
+          }
+        },
+        {
+          "name": "2.5 GET /temas?estado=BANEADO - Como ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test('Solo temas BANEADO', () => b.forEach(t => pm.expect(t.estado).to.eql('BANEADO')));",
+                  "if (b.length) pm.collectionVariables.set('baneadoId', b[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas?estado=BANEADO"
+          }
+        },
+        {
+          "name": "2.6 GET /temas/1 - Ver un tema (suma una visita)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const t = pm.response.json();",
+                  "pm.test('Incluye autor, categoría y cantidad de comentarios', () => pm.expect(t).to.include.keys('autorAlias', 'categoria', 'comentarios', 'vistas'));",
+                  "pm.collectionVariables.set('vistas', t.vistas);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/1"
+          }
+        },
+        {
+          "name": "2.7 GET /temas/1 - Las visitas aumentan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Vistas +1', () => pm.expect(pm.response.json().vistas).to.eql(Number(pm.collectionVariables.get('vistas')) + 1));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/1"
+          }
+        },
+        {
+          "name": "2.8 GET /temas/{id} - Tema baneado (410)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 410 Gone', () => pm.response.to.have.status(410));",
+                  "pm.test('Removido por moderación', () => pm.expect(pm.response.json().error).to.include('removido por moderación'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{baneadoId}}"
+          }
+        },
+        {
+          "name": "2.9 GET /temas/abc - ID no numérico (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/abc"
+          }
+        }
+      ],
+      "description": "Búsqueda por texto, categoría y estado, y visualización de temas."
+    },
+    {
+      "name": "3. Publicación de temas",
+      "item": [
+        {
+          "name": "3.1 POST /temas - Datos inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Valida título, contenido y categoría', () => pm.expect(pm.response.json().detalle).to.include.keys('titulo', 'contenido', 'categoriaId'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Corto\",\n  \"contenido\": \"Muy corto\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.2 POST /temas - Sin header X-Usuario-Id (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/temas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "3.3 POST /temas - Autor inexistente en ms-usuarios (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "999999"
+              }
+            ],
+            "url": "{{baseUrl}}/temas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "3.4 POST /temas - Publicar (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const t = pm.response.json();",
+                  "pm.test('El alias del autor viene de ms-usuarios', () => pm.expect(t.autorAlias).to.eql('vale.soto'));",
+                  "pm.test('Queda ACTIVO, sin visitas ni comentarios', () => { pm.expect(t.estado).to.eql('ACTIVO'); pm.expect(t.vistas).to.eql(0); pm.expect(t.comentarios).to.eql(0); });",
+                  "pm.collectionVariables.set('temaId', t.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "3.5 PUT /temas/{id} - Editar un tema ajeno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Intento de edición ajena del tema\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "3.6 PUT /temas/{id} - El autor edita su tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const t = pm.response.json();",
+                  "pm.test('Título y categoría actualizados', () => { pm.expect(t.titulo).to.eql('Postman y Newman: ¿cómo organizan sus colecciones?'); pm.expect(t.categoriaId).to.eql(1); });",
+                  "pm.test('Registra la fecha de edición', () => pm.expect(t.fechaActualizacion).to.not.be.null);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Postman y Newman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "3.7 GET /temas?autorId= - Temas del autor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye el tema publicado', () => pm.expect(pm.response.json().map(t => t.id)).to.include(Number(pm.collectionVariables.get('temaId'))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas?autorId={{autorId}}"
+          }
+        }
+      ],
+      "description": "Publicar y editar temas (el autor se valida contra ms-usuarios)."
+    },
+    {
+      "name": "4. Comentarios",
+      "item": [
+        {
+          "name": "4.1 POST /temas/{id}/comentarios - Vacío (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Mensaje de validación', () => pm.expect(pm.response.json().detalle.contenido).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.2 POST /temas/{id}/comentarios - Comentar (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const c = pm.response.json();",
+                  "pm.test('Autor mati.gamer', () => pm.expect(c.autorAlias).to.eql('mati.gamer'));",
+                  "pm.collectionVariables.set('comentarioId', c.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"Yo uso una carpeta por recurso y variables de colección para los IDs.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.3 GET /temas/{id}/comentarios - Comentarios del tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Aparece el comentario', () => pm.expect(pm.response.json().map(c => c.id)).to.include(Number(pm.collectionVariables.get('comentarioId'))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios"
+          }
+        },
+        {
+          "name": "4.4 PUT /comentarios/{id} - Editar comentario ajeno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"Edición no autorizada\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.5 PUT /comentarios/{id} - El autor edita su comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"Yo uso una carpeta por recurso, variables de colección y Newman en CI.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.6 PATCH /comentarios/{id}/moderacion - Como USUARIO (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Intento sin permisos\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.7 PATCH /comentarios/{id}/moderacion - ADMIN banea",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Queda BANEADO con motivo', () => { const c = pm.response.json(); pm.expect(c.estado).to.eql('BANEADO'); pm.expect(c.motivoBaneo).to.eql('Prueba de moderación'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Prueba de moderación\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.8 GET /temas/{id}/comentarios - Ya no se muestra",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('El comentario baneado está oculto', () => pm.expect(pm.response.json().map(c => c.id)).to.not.include(Number(pm.collectionVariables.get('comentarioId'))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios"
+          }
+        },
+        {
+          "name": "4.9 GET /comentarios?estado=BANEADO - Panel ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Incluye el comentario baneado', () => pm.expect(pm.response.json().map(c => c.id)).to.include(Number(pm.collectionVariables.get('comentarioId'))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios?estado=BANEADO"
+          }
+        },
+        {
+          "name": "4.10 PATCH /comentarios/{id}/moderacion - ADMIN restaura",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Vuelve a ACTIVO y sin motivo', () => { const c = pm.response.json(); pm.expect(c.estado).to.eql('ACTIVO'); pm.expect(c.motivoBaneo).to.be.null; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ACTIVO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "4.11 DELETE /comentarios/{id} - El autor elimina su comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/comentarios/{{comentarioId}}"
+          }
+        }
+      ],
+      "description": "Comentar, editar, eliminar y moderar comentarios."
+    },
+    {
+      "name": "5. Moderación y eliminación de temas",
+      "item": [
+        {
+          "name": "5.1 PATCH /temas/{id}/moderacion - ADMIN banea el tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Tema BANEADO', () => pm.expect(pm.response.json().estado).to.eql('BANEADO'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}/moderacion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Prueba de moderación de temas\"\n}"
+            }
+          }
+        },
+        {
+          "name": "5.2 GET /temas/{id} - Tema baneado (410)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 410 Gone', () => pm.response.to.have.status(410));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "5.3 POST comentario en tema baneado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('No se puede comentar', () => pm.expect(pm.response.json().error).to.eql('No se puede comentar un tema baneado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"¿Alguien sigue por aquí?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "5.4 PUT /temas/{id} - Editar tema baneado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "5.5 GET /temas/{id}/estado - Estado sin sumar visitas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Estado BANEADO con motivo', () => { const t = pm.response.json(); pm.expect(t.estado).to.eql('BANEADO'); pm.expect(t.motivoBaneo).to.eql('Prueba de moderación de temas'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{temaId}}/estado"
+          }
+        },
+        {
+          "name": "5.6 PATCH /temas/{id}/moderacion - ADMIN restaura el tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}/moderacion",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ACTIVO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "5.7 DELETE /temas/{id} - Un usuario que no es autor (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "5.8 DELETE /temas/{id} - El autor elimina su tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "5.9 GET /temas/{id}/estado - Tema eliminado (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));",
+                  "pm.test('Mensaje de error', () => pm.expect(pm.response.json().error).to.eql('No existe un tema con ID ' + pm.collectionVariables.get('temaId')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/temas/{{temaId}}/estado"
+          }
+        }
+      ],
+      "description": "Banear y restaurar temas (solo ADMIN, validado en ms-usuarios) y eliminarlos."
+    },
+    {
+      "name": "6. Patrón Observer y estado",
+      "item": [
+        {
+          "name": "6.1 GET /auditoria - Eventos registrados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const id = Number(pm.collectionVariables.get('temaId'));",
+                  "const tipos = pm.response.json().filter(e => e.recurso === 'tema' && e.id === id).map(e => e.tipo);",
+                  "pm.test('Registró CREADO, ACTUALIZADO y ELIMINADO del tema de prueba', () => pm.expect(tipos).to.include.members(['CREADO', 'ACTUALIZADO', 'ELIMINADO']));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/auditoria"
+          }
+        },
+        {
+          "name": "6.2 GET /actuator/health - Estado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        }
+      ]
+    }
+  ]
+}
