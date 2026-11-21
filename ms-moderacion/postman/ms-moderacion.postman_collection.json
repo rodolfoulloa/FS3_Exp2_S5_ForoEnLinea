@@ -1,0 +1,1093 @@
+{
+  "info": {
+    "name": "Ágora · ms-moderacion",
+    "description": "Microservicio de gestión de publicaciones y comentarios por un administrador (puerto 8083), contra Oracle Cloud.\n\nRequiere ms-usuarios (8081) y ms-foro (8082) en ejecución. Variables: autorId=4 (mati.gamer, publica el contenido), reportanteId=3 (vale.soto), otroReportanteId=5 (fer.cine), tercerReportanteId=6 (tomas.dev) y adminId=1 (camila.admin).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "foroUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "adminId",
+      "value": "1"
+    },
+    {
+      "key": "autorId",
+      "value": "4"
+    },
+    {
+      "key": "reportanteId",
+      "value": "3"
+    },
+    {
+      "key": "otroReportanteId",
+      "value": "5"
+    },
+    {
+      "key": "tercerReportanteId",
+      "value": "6"
+    },
+    {
+      "key": "temaId",
+      "value": ""
+    },
+    {
+      "key": "comentarioId",
+      "value": ""
+    },
+    {
+      "key": "reporteId",
+      "value": ""
+    },
+    {
+      "key": "reporteComentarioId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Preparación en ms-foro",
+      "item": [
+        {
+          "name": "1.1 POST {{foroUrl}}/temas - El autor publica un tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('temaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{foroUrl}}/temas",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"OFERTA: compra seguidores baratos para tu canal\",\n  \"contenido\": \"Tema de prueba para moderación: simula publicidad no permitida en el foro de Ágora.\",\n  \"categoriaId\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "1.2 POST {{foroUrl}}/temas/{id}/comentarios - El autor comenta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('comentarioId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contenido\": \"Comentario de prueba para moderación.\"\n}"
+            }
+          }
+        }
+      ],
+      "description": "Crea un tema y un comentario en ms-foro para moderarlos (requiere ms-foro y ms-usuarios)."
+    },
+    {
+      "name": "2. Reportes de usuarios",
+      "item": [
+        {
+          "name": "2.1 POST /reportes - Datos vacíos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Valida tipo, contenido y motivo', () => pm.expect(pm.response.json().detalle).to.include.keys('tipoContenido', 'contenidoId', 'motivo'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "2.2 POST /reportes - Motivo OTRO sin detalle (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Exige el detalle', () => pm.expect(pm.response.json().detalle.detalleSuficiente).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"OTRO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.3 POST /reportes - Tipo de contenido inválido (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"USUARIO\",\n  \"contenidoId\": 1,\n  \"motivo\": \"SPAM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.4 POST /reportes - Reportar contenido propio (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('No puede reportarse a sí mismo', () => pm.expect(pm.response.json().error).to.eql('No puede reportar su propio contenido'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.5 POST /reportes - Contenido inexistente en ms-foro (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": 999999,\n  \"motivo\": \"SPAM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.6 POST /reportes - Reportar un tema (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "pm.test('Queda PENDIENTE con el título del tema', () => { pm.expect(r.estado).to.eql('PENDIENTE'); pm.expect(r.resumenContenido).to.include('OFERTA'); });",
+                  "pm.test('Reportante identificado en ms-usuarios', () => pm.expect(r.reportanteAlias).to.eql('vale.soto'));",
+                  "pm.collectionVariables.set('reporteId', r.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\",\n  \"detalle\": \"Vende seguidores\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.7 POST /reportes - El mismo usuario repite el reporte (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.8 POST /reportes - Otro usuario reporta el mismo tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{otroReportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"CONTENIDO_INAPROPIADO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.9 POST /reportes - Reportar un comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('reporteComentarioId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"COMENTARIO\",\n  \"contenidoId\": \"{{comentarioId}}\",\n  \"motivo\": \"OTRO\",\n  \"detalle\": \"Parece un comentario automático sin relación con el tema\"\n}"
+            }
+          }
+        },
+        {
+          "name": "2.10 GET /reportes - Como USUARIO (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes"
+          }
+        },
+        {
+          "name": "2.11 GET /reportes?estado=PENDIENTE - Bandeja del ADMIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const ids = pm.response.json().map(r => r.id);",
+                  "pm.test('Incluye los reportes nuevos', () => pm.expect(ids).to.include(Number(pm.collectionVariables.get('reporteId'))));",
+                  "pm.test('Solo PENDIENTE', () => pm.response.json().forEach(r => pm.expect(r.estado).to.eql('PENDIENTE')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes?estado=PENDIENTE"
+          }
+        }
+      ],
+      "description": "Cualquier usuario activo reporta contenido; solo el ADMIN ve la bandeja."
+    },
+    {
+      "name": "3. Moderación por el ADMIN",
+      "item": [
+        {
+          "name": "3.1 POST /moderacion/temas/{id}/banear - Como USUARIO (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Intento sin permisos de administrador\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.2 POST /moderacion/temas/{id}/banear - Motivo muy corto (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Valida el motivo', () => pm.expect(pm.response.json().detalle.motivo).to.eql('El motivo debe tener entre 10 y 300 caracteres'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"spam\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.3 POST /moderacion/temas/{id}/banear - ADMIN banea el tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "const a = pm.response.json();",
+                  "pm.test('Acción BANEAR registrada por camila.admin', () => { pm.expect(a.accion).to.eql('BANEAR'); pm.expect(a.adminAlias).to.eql('camila.admin'); });",
+                  "pm.test('Resolvió los 2 reportes pendientes', () => pm.expect(a.reportesResueltos).to.eql(2));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Spam: venta de seguidores\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.4 GET {{foroUrl}}/temas/{id} - ms-foro ya no lo muestra (410)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 410 Gone', () => pm.response.to.have.status(410));",
+                  "pm.test('Motivo visible', () => pm.expect(pm.response.json().error).to.include('Spam: venta de seguidores'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{foroUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "3.5 POST /moderacion/temas/{id}/banear - Ya baneado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Informa que ya está baneado', () => pm.expect(pm.response.json().error).to.eql('El tema ya está baneado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Spam: venta de seguidores\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.6 GET /reportes/{id} - Reporte RESUELTO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test('Resuelto por el ADMIN', () => { pm.expect(r.estado).to.eql('RESUELTO'); pm.expect(r.resueltoPorAlias).to.eql('camila.admin'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes/{{reporteId}}"
+          }
+        },
+        {
+          "name": "3.7 POST /reportes - Reportar contenido ya baneado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{tercerReportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.8 PATCH /reportes/{id}/descartar - Descartar reporte del comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Queda DESCARTADO', () => pm.expect(pm.response.json().estado).to.eql('DESCARTADO'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes/{{reporteComentarioId}}/descartar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"El comentario no incumple las normas del foro\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.9 PATCH /reportes/{id}/descartar - Ya cerrado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/reportes/{{reporteComentarioId}}/descartar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Segundo intento de descartar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.10 POST /moderacion/comentarios/{id}/banear - ADMIN banea el comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Sin reportes pendientes que resolver', () => pm.expect(pm.response.json().reportesResueltos).to.eql(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/comentarios/{{comentarioId}}/banear",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Comentario automático (spam)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.11 GET {{foroUrl}}/comentarios/{id} - Estado BANEADO en ms-foro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('BANEADO', () => pm.expect(pm.response.json().estado).to.eql('BANEADO'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}"
+          }
+        },
+        {
+          "name": "3.12 POST /moderacion/comentarios/{id}/restaurar - Restaurar comentario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Acción RESTAURAR', () => pm.expect(pm.response.json().accion).to.eql('RESTAURAR'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/comentarios/{{comentarioId}}/restaurar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Apelación aceptada por el equipo de moderación\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.13 POST /moderacion/temas/{id}/restaurar - Restaurar tema",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/restaurar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Revisión: restaurado para la prueba\"\n}"
+            }
+          }
+        },
+        {
+          "name": "3.14 GET {{foroUrl}}/temas/{id} - Visible otra vez en ms-foro",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('ACTIVO', () => pm.expect(pm.response.json().estado).to.eql('ACTIVO'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{foroUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "3.15 POST /moderacion/temas/{id}/restaurar - No está baneado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Informa que no está baneado', () => pm.expect(pm.response.json().error).to.eql('El tema no está baneado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/restaurar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Restauración innecesaria\"\n}"
+            }
+          }
+        }
+      ],
+      "description": "Banear y restaurar temas y comentarios (Strategy por tipo de contenido) y descartar reportes."
+    },
+    {
+      "name": "4. Panel del administrador",
+      "item": [
+        {
+          "name": "4.1 GET /moderacion/acciones - Historial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const acciones = pm.response.json().filter(a => a.contenidoId === Number(pm.collectionVariables.get('temaId')) && a.tipoContenido === 'TEMA').map(a => a.accion);",
+                  "pm.test('Registra BANEAR y RESTAURAR del tema', () => pm.expect(acciones).to.include.members(['BANEAR', 'RESTAURAR']));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/acciones"
+          }
+        },
+        {
+          "name": "4.2 GET /moderacion/acciones?tipo=COMENTARIO - Filtrar por tipo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo comentarios', () => pm.response.json().forEach(a => pm.expect(a.tipoContenido).to.eql('COMENTARIO')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/acciones?tipo=COMENTARIO"
+          }
+        },
+        {
+          "name": "4.3 GET /moderacion/resumen - Contadores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test('Incluye reportes y baneos', () => pm.expect(r).to.include.keys('reportesPendientes', 'reportesResueltos', 'reportesDescartados', 'temasBaneados', 'comentariosBaneados', 'restauraciones'));",
+                  "pm.test('Hay baneos y restauraciones', () => { pm.expect(r.temasBaneados).to.be.above(0); pm.expect(r.restauraciones).to.be.above(0); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{adminId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/resumen"
+          }
+        },
+        {
+          "name": "4.4 GET /moderacion/resumen - Como USUARIO (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 Forbidden', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{reportanteId}}"
+              }
+            ],
+            "url": "{{baseUrl}}/moderacion/resumen"
+          }
+        },
+        {
+          "name": "4.5 GET /moderacion/resumen - Sin header (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/moderacion/resumen"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Limpieza, Observer y estado",
+      "item": [
+        {
+          "name": "5.1 DELETE {{foroUrl}}/temas/{id} - El autor elimina el tema de prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Usuario-Id",
+                "value": "{{autorId}}"
+              }
+            ],
+            "url": "{{foroUrl}}/temas/{{temaId}}"
+          }
+        },
+        {
+          "name": "5.2 GET /auditoria - Eventos registrados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "const recursos = pm.response.json().map(e => e.recurso);",
+                  "pm.test('Registró reportes y acciones de moderación', () => pm.expect(recursos).to.include.members(['reporte', 'registro de moderación']));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/auditoria"
+          }
+        },
+        {
+          "name": "5.3 GET /actuator/health - Estado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        }
+      ]
+    }
+  ]
+}
