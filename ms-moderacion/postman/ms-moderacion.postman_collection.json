@@ -1,12 +1,12 @@
 {
   "info": {
     "name": "Ágora · ms-moderacion",
-    "description": "Microservicio de gestión de publicaciones y comentarios por un administrador (puerto 8083), contra Oracle Cloud.\n\nRequiere ms-usuarios (8081) y ms-foro (8082) en ejecución. Variables: autorId=4 (mati.gamer, publica el contenido), reportanteId=3 (vale.soto), otroReportanteId=5 (fer.cine), tercerReportanteId=6 (tomas.dev) y adminId=1 (camila.admin).",
+    "description": "Microservicio de gestión de publicaciones y comentarios por un administrador (puerto 8083), contra Oracle Cloud.\n\nRequiere ms-usuarios (8081) y ms-foro (8082) en ejecución. Variables: autorId=4 (mati.gamer, publica el contenido), reportanteId=3 (vale.soto), otroReportanteId=5 (fer.cine), tercerReportanteId=6 (tomas.dev) y adminId=1 (camila.admin).\n\nURL base: variable {{moderacionUrl}}. Use el entorno 'Ágora · Local' o 'Ágora · Nube' (postman/ en la raíz del repositorio).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
-      "key": "baseUrl",
+      "key": "moderacionUrl",
       "value": "http://localhost:8083"
     },
     {
@@ -149,7 +149,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -181,7 +181,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"OTRO\"\n}"
@@ -212,7 +212,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"USUARIO\",\n  \"contenidoId\": 1,\n  \"motivo\": \"SPAM\"\n}"
@@ -244,7 +244,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
@@ -275,7 +275,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": 999999,\n  \"motivo\": \"SPAM\"\n}"
@@ -310,7 +310,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\",\n  \"detalle\": \"Vende seguidores\"\n}"
@@ -341,7 +341,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
@@ -372,7 +372,7 @@
                 "value": "{{otroReportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"CONTENIDO_INAPROPIADO\"\n}"
@@ -404,7 +404,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"COMENTARIO\",\n  \"contenidoId\": \"{{comentarioId}}\",\n  \"motivo\": \"OTRO\",\n  \"detalle\": \"Parece un comentario automático sin relación con el tema\"\n}"
@@ -431,7 +431,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes"
+            "url": "{{moderacionUrl}}/reportes"
           }
         },
         {
@@ -457,7 +457,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes?estado=PENDIENTE"
+            "url": "{{moderacionUrl}}/reportes?estado=PENDIENTE"
           }
         }
       ],
@@ -490,7 +490,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/banear",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Intento sin permisos de administrador\"\n}"
@@ -522,7 +522,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/banear",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"spam\"\n}"
@@ -556,7 +556,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/banear",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Spam: venta de seguidores\"\n}"
@@ -607,7 +607,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/banear",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/banear",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Spam: venta de seguidores\"\n}"
@@ -636,7 +636,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes/{{reporteId}}"
+            "url": "{{moderacionUrl}}/reportes/{{reporteId}}"
           }
         },
         {
@@ -663,7 +663,7 @@
                 "value": "{{tercerReportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes",
+            "url": "{{moderacionUrl}}/reportes",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"tipoContenido\": \"TEMA\",\n  \"contenidoId\": \"{{temaId}}\",\n  \"motivo\": \"SPAM\"\n}"
@@ -695,7 +695,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes/{{reporteComentarioId}}/descartar",
+            "url": "{{moderacionUrl}}/reportes/{{reporteComentarioId}}/descartar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"El comentario no incumple las normas del foro\"\n}"
@@ -726,7 +726,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/reportes/{{reporteComentarioId}}/descartar",
+            "url": "{{moderacionUrl}}/reportes/{{reporteComentarioId}}/descartar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Segundo intento de descartar\"\n}"
@@ -758,7 +758,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/comentarios/{{comentarioId}}/banear",
+            "url": "{{moderacionUrl}}/moderacion/comentarios/{{comentarioId}}/banear",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Comentario automático (spam)\"\n}"
@@ -809,7 +809,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/comentarios/{{comentarioId}}/restaurar",
+            "url": "{{moderacionUrl}}/moderacion/comentarios/{{comentarioId}}/restaurar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Apelación aceptada por el equipo de moderación\"\n}"
@@ -840,7 +840,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/restaurar",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/restaurar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Revisión: restaurado para la prueba\"\n}"
@@ -891,7 +891,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/temas/{{temaId}}/restaurar",
+            "url": "{{moderacionUrl}}/moderacion/temas/{{temaId}}/restaurar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"motivo\": \"Restauración innecesaria\"\n}"
@@ -926,7 +926,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/acciones"
+            "url": "{{moderacionUrl}}/moderacion/acciones"
           }
         },
         {
@@ -950,7 +950,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/acciones?tipo=COMENTARIO"
+            "url": "{{moderacionUrl}}/moderacion/acciones?tipo=COMENTARIO"
           }
         },
         {
@@ -976,7 +976,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/resumen"
+            "url": "{{moderacionUrl}}/moderacion/resumen"
           }
         },
         {
@@ -999,7 +999,7 @@
                 "value": "{{reportanteId}}"
               }
             ],
-            "url": "{{baseUrl}}/moderacion/resumen"
+            "url": "{{moderacionUrl}}/moderacion/resumen"
           }
         },
         {
@@ -1017,7 +1017,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/moderacion/resumen"
+            "url": "{{moderacionUrl}}/moderacion/resumen"
           }
         }
       ]
@@ -1065,7 +1065,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/auditoria"
+            "url": "{{moderacionUrl}}/auditoria"
           }
         },
         {
@@ -1084,7 +1084,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/actuator/health"
+            "url": "{{moderacionUrl}}/actuator/health"
           }
         }
       ]
