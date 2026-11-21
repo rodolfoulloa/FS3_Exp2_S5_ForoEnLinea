@@ -1,0 +1,23 @@
+# Credenciales y wallet de Oracle (NUNCA subir al repositorio)
+.env
+wallet/
+Wallet_*/
+*.zip
+application-local.properties
+
+# Compilados y dependencias
+target/
+node_modules/
+dist/
+.angular/
+
+# IDE / sistema
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Configuración local no versionada (keepalive de la BD, etc.)
+docker-compose.override.yml
+keepalive/
