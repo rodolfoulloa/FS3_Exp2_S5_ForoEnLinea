@@ -12,7 +12,7 @@
     <artifactId>ms-usuarios</artifactId>
     <version>1.0.0</version>
     <name>ms-usuarios</name>
-    <description>Microservicio generado con microservicio-arquetipo (Spring Boot 3 + Oracle)</description>
+    <description>Ágora · Microservicio de usuarios: registro, inicio de sesión, recuperación de contraseña, perfil y administración (generado con microservicio-arquetipo 1.1.0)</description>
 
     <properties>
         <java.version>21</java.version>
@@ -41,6 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- BCrypt para cifrar contraseñas (solo el módulo crypto, sin Spring Security completo) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
         <!-- Driver Oracle -->
