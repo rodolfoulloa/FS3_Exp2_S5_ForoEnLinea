@@ -12,7 +12,7 @@
     <artifactId>ms-moderacion</artifactId>
     <version>1.0.0</version>
     <name>ms-moderacion</name>
-    <description>Microservicio generado con microservicio-arquetipo (Spring Boot 3 + Oracle)</description>
+    <description>Ágora · Microservicio de moderación: reportes de contenido y gestión de temas y comentarios por un administrador (generado con microservicio-arquetipo 1.1.0)</description>
 
     <properties>
         <java.version>21</java.version>
