@@ -26,6 +26,36 @@ public class GlobalExceptionHandler {
         return responder(HttpStatus.NOT_FOUND, ex.getMessage(), null);
     }
 
+    /** 409 cuando la operación choca con datos existentes (ej: valor único repetido). */
+    @ExceptionHandler(ConflictoException.class)
+    public ResponseEntity<ErrorResponse> manejarConflicto(ConflictoException ex) {
+        return responder(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
+
+    /** 400 cuando se rompe una regla de negocio. */
+    @ExceptionHandler(ReglaNegocioException.class)
+    public ResponseEntity<ErrorResponse> manejarReglaNegocio(ReglaNegocioException ex) {
+        return responder(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+    }
+
+    /** 403 cuando el usuario no tiene permisos. */
+    @ExceptionHandler(AccesoDenegadoException.class)
+    public ResponseEntity<ErrorResponse> manejarAccesoDenegado(AccesoDenegadoException ex) {
+        return responder(HttpStatus.FORBIDDEN, ex.getMessage(), null);
+    }
+
+    /** 503 cuando otro microservicio no responde. */
+    @ExceptionHandler(ServicioNoDisponibleException.class)
+    public ResponseEntity<ErrorResponse> manejarServicioNoDisponible(ServicioNoDisponibleException ex) {
+        return responder(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), null);
+    }
+
+    /** 400 cuando falta un header obligatorio (ej: X-Usuario-Id). */
+    @ExceptionHandler(org.springframework.web.bind.MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorResponse> manejarHeaderFaltante(org.springframework.web.bind.MissingRequestHeaderException ex) {
+        return responder(HttpStatus.BAD_REQUEST, "Falta el header obligatorio '" + ex.getHeaderName() + "'", null);
+    }
+
     /** 400 cuando el JSON no cumple las validaciones del DTO. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> manejarValidacion(MethodArgumentNotValidException ex) {
