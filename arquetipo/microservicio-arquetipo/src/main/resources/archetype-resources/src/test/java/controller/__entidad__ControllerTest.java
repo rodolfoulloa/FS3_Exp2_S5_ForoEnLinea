@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ${package}.exception.ConflictoException;
 import ${package}.exception.RecursoNoEncontradoException;
 import ${package}.factory.${entidad}Factory;
 import ${package}.model.${entidad};
@@ -127,5 +128,14 @@ class ${entidad}ControllerTest {
         doThrow(new RecursoNoEncontradoException("${entidad.toLowerCase()}", 99L)).when(servicio).eliminar(99L);
 
         mockMvc.perform(delete("/${recurso}/99")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void crear_conConflicto_devuelve409() throws Exception {
+        when(servicio.crear(any(${entidad}.class))).thenThrow(new ConflictoException("Ya existe"));
+
+        mockMvc.perform(post("/${recurso}").contentType(MediaType.APPLICATION_JSON).content(JSON_VALIDO))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("Ya existe"));
     }
 }
