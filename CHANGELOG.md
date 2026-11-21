@@ -2,6 +2,14 @@
 
 Cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones usan [versionado semántico](https://semver.org/lang/es/).
 
+## [1.0.1] - 2026-11-21
+
+### Corregido
+- `scripts/publicar-imagenes.ps1` fallaba en Windows PowerShell 5.1: el progreso que Docker escribe en stderr se trataba como error. Ahora los errores se detectan con `$LASTEXITCODE`.
+
+### Cambiado
+- Imágenes publicadas en Docker Hub (`rodolfoulloa/agora-*`, etiquetas `1.0.0` y `latest`). La guía de despliegue, el guion y `.env.example` usan ese usuario.
+
 ## [1.0.0] - 2026-11-21 · Entrega de la semana 5
 
 ### Agregado
@@ -39,4 +47,5 @@ Cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://kee
   - Guía de despliegue en Play with Docker.
 - Entornos de Postman local y nube, guion del video y README con evidencias.
 
+[1.0.1]: https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea/releases/tag/v1.0.0
