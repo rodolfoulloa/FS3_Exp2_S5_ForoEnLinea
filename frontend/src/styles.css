@@ -1,0 +1,442 @@
+/* =====================================================================
+   Tema "Ágora" sobre Bootstrap 5.3
+   ---------------------------------------------------------------------
+   Bootstrap se carga primero (angular.json → styles) y este archivo lo
+   personaliza: redefine sus variables (--bs-*) y agrega componentes propios.
+
+   Paleta:
+     Azul profundo  #1D3557  → identidad, barra, títulos, botones principales
+     Coral          #E76F51  → acción y acentos (publicar, enlaces activos)
+     Verde mar      #2A9D8F  → éxito, estados positivos
+     Arena          #F4F1EA  → fondo de la aplicación
+   ===================================================================== */
+
+:root {
+  --ag-azul: #1d3557;
+  --ag-azul-oscuro: #13243c;
+  --ag-azul-medio: #2b4c7e;
+  --ag-azul-suave: #e6ecf5;
+  --ag-coral: #e76f51;
+  --ag-coral-oscuro: #c9543a;
+  --ag-coral-suave: #fbe7e1;
+  --ag-verde: #2a9d8f;
+  --ag-arena: #f4f1ea;
+  --ag-blanco: #ffffff;
+  --ag-borde: #e3ddd1;
+  --ag-texto: #1f2933;
+  --ag-texto-suave: #5f6b76;
+  --ag-sombra: 0 8px 24px rgba(29, 53, 87, 0.08);
+  --ag-sombra-hover: 0 12px 32px rgba(29, 53, 87, 0.16);
+  --ag-radio: 0.85rem;
+
+  --bs-primary: var(--ag-azul);
+  --bs-primary-rgb: 29, 53, 87;
+  --bs-danger: #c0392b;
+  --bs-success: var(--ag-verde);
+  --bs-success-rgb: 42, 157, 143;
+  --bs-body-bg: var(--ag-arena);
+  --bs-body-color: var(--ag-texto);
+  --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-secondary-color: var(--ag-texto-suave);
+  --bs-border-color: var(--ag-borde);
+  --bs-border-radius: 0.6rem;
+  --bs-link-color: var(--ag-azul-medio);
+  --bs-link-color-rgb: 43, 76, 126;
+  --bs-link-hover-color: var(--ag-coral-oscuro);
+  --bs-heading-color: var(--ag-azul);
+}
+
+app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, .titulo-display {
+  font-family: 'Outfit', var(--bs-body-font-family);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Permite que el texto largo se recorte dentro de contenedores flex */
+.min-w-0 {
+  min-width: 0;
+}
+
+/* ---------- Barra de navegación ---------- */
+.navbar-agora {
+  background: var(--ag-azul);
+  box-shadow: 0 2px 14px rgba(19, 36, 60, 0.3);
+}
+.navbar-agora .navbar-brand {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar-agora .navbar-brand img {
+  width: 38px;
+  height: 38px;
+  background: var(--ag-arena);
+  border-radius: 10px;
+  padding: 3px;
+}
+.navbar-agora .nav-link {
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.85rem !important;
+}
+.navbar-agora .nav-link:hover,
+.navbar-agora .nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.navbar-agora .nav-link,
+.navbar-agora .btn {
+  white-space: nowrap;
+}
+@media (min-width: 1200px) {
+  .navbar-agora .buscador-nav {
+    width: 190px;
+  }
+}
+.navbar-agora .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.navbar-agora .navbar-toggler-icon {
+  filter: invert(1);
+}
+.navbar-agora .buscador-nav .form-control {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+.navbar-agora .buscador-nav .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+.navbar-agora .dropdown-menu {
+  border: 0;
+  box-shadow: var(--ag-sombra-hover);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  font-weight: 600;
+  border-radius: 0.6rem;
+}
+.btn-primary {
+  --bs-btn-bg: var(--ag-azul);
+  --bs-btn-border-color: var(--ag-azul);
+  --bs-btn-hover-bg: var(--ag-azul-medio);
+  --bs-btn-hover-border-color: var(--ag-azul-medio);
+  --bs-btn-active-bg: var(--ag-azul-oscuro);
+  --bs-btn-disabled-bg: var(--ag-azul);
+  --bs-btn-disabled-border-color: var(--ag-azul);
+}
+.btn-coral {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--ag-coral);
+  --bs-btn-border-color: var(--ag-coral);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--ag-coral-oscuro);
+  --bs-btn-hover-border-color: var(--ag-coral-oscuro);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--ag-coral-oscuro);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--ag-coral);
+  --bs-btn-disabled-border-color: var(--ag-coral);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--ag-azul);
+  --bs-btn-border-color: var(--ag-azul);
+  --bs-btn-hover-bg: var(--ag-azul);
+  --bs-btn-hover-border-color: var(--ag-azul);
+}
+
+/* ---------- Tarjetas ---------- */
+.card {
+  --bs-card-border-color: var(--ag-borde);
+  --bs-card-border-radius: var(--ag-radio);
+  box-shadow: var(--ag-sombra);
+}
+.tarjeta-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tarjeta-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ag-sombra-hover);
+}
+
+/* ---------- Portada (inicio) ---------- */
+.hero-agora {
+  background:
+    radial-gradient(circle at 85% 20%, rgba(231, 111, 81, 0.35), transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(42, 157, 143, 0.35), transparent 45%),
+    linear-gradient(135deg, var(--ag-azul-oscuro), var(--ag-azul-medio));
+  color: #fff;
+  border-radius: 1.2rem;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-agora h1 {
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+.hero-agora .lead {
+  color: rgba(255, 255, 255, 0.85);
+}
+.hero-agora .columnas-deco {
+  position: absolute;
+  right: 2rem;
+  bottom: -1rem;
+  width: 240px;
+  opacity: 0.18;
+}
+.cifra {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ---------- Categorías ---------- */
+.tarjeta-categoria {
+  border-top: 5px solid var(--color-categoria, var(--ag-azul));
+  color: inherit;
+  height: 100%;
+}
+.icono-categoria {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  background: var(--color-categoria, var(--ag-azul));
+  flex-shrink: 0;
+}
+.chip-categoria {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  color: var(--color-categoria, var(--ag-azul));
+  background: color-mix(in srgb, var(--color-categoria, var(--ag-azul)) 12%, white);
+}
+.encabezado-categoria {
+  background: linear-gradient(135deg, var(--color-categoria, var(--ag-azul)), color-mix(in srgb, var(--color-categoria, var(--ag-azul)) 60%, black));
+  color: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+}
+.encabezado-categoria h1 {
+  color: #fff;
+}
+
+/* ---------- Lista de temas ---------- */
+.item-tema {
+  display: block;
+  color: inherit;
+  border-left: 4px solid var(--color-categoria, var(--ag-azul));
+}
+.item-tema:hover .titulo-tema {
+  color: var(--ag-coral-oscuro);
+}
+.titulo-tema {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ag-azul);
+  transition: color 0.15s;
+}
+.metadatos {
+  color: var(--ag-texto-suave);
+  font-size: 0.85rem;
+}
+.metadatos i {
+  margin-right: 0.2rem;
+}
+
+/* ---------- Detalle de tema y comentarios ---------- */
+.contenido-tema {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+.comentario {
+  background: var(--ag-blanco);
+  border: 1px solid var(--ag-borde);
+  border-radius: var(--ag-radio);
+}
+.comentario.propio {
+  border-left: 4px solid var(--ag-coral);
+}
+
+/* ---------- Avatar ---------- */
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.avatar.avatar-lg {
+  width: 84px;
+  height: 84px;
+  font-size: 1.8rem;
+}
+
+/* ---------- Formularios y autenticación ---------- */
+.form-label {
+  font-weight: 600;
+  color: var(--ag-azul);
+  font-size: 0.9rem;
+}
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--ag-coral);
+  box-shadow: 0 0 0 0.25rem rgba(231, 111, 81, 0.2);
+}
+.form-check-input:checked {
+  background-color: var(--ag-coral);
+  border-color: var(--ag-coral);
+}
+.pantalla-auth {
+  max-width: 1000px;
+}
+.panel-marca {
+  background: linear-gradient(160deg, var(--ag-azul), var(--ag-azul-oscuro));
+  color: #fff;
+  border-radius: var(--ag-radio) 0 0 var(--ag-radio);
+}
+.panel-marca h2 {
+  color: #fff;
+}
+.panel-marca img {
+  width: 96px;
+  background: var(--ag-arena);
+  border-radius: 22px;
+  padding: 8px;
+}
+.reglas-password li {
+  color: var(--ag-texto-suave);
+  margin-bottom: 0.15rem;
+}
+.reglas-password li.cumple {
+  color: var(--ag-verde);
+}
+.codigo-simulado {
+  font-family: 'Outfit', monospace;
+  letter-spacing: 0.4em;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ag-azul);
+}
+
+/* ---------- Administración ---------- */
+.menu-admin .nav-link {
+  color: var(--ag-texto);
+  border-radius: 0.6rem;
+  font-weight: 500;
+}
+.menu-admin .nav-link.active {
+  background: var(--ag-azul);
+  color: #fff;
+}
+.menu-admin .nav-link:not(.active):hover {
+  background: var(--ag-azul-suave);
+}
+.tarjeta-cifra {
+  border-left: 5px solid var(--color-cifra, var(--ag-azul));
+}
+.tarjeta-cifra .icono {
+  font-size: 1.6rem;
+  color: var(--color-cifra, var(--ag-azul));
+}
+.tabla-agora thead th {
+  background: var(--ag-azul);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 0;
+}
+
+/* ---------- Avisos (toasts) ---------- */
+.contenedor-avisos {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1100;
+  max-width: calc(100vw - 2rem);
+}
+
+/* ---------- Pie ---------- */
+.pie-agora {
+  margin-top: auto;
+  background: var(--ag-azul-oscuro);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9rem;
+}
+.pie-agora a {
+  color: rgba(255, 255, 255, 0.9);
+}
+.pie-agora a:hover {
+  color: var(--ag-coral);
+}
+
+/* ---------- Estado vacío ---------- */
+.vacio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ag-texto-suave);
+}
+.vacio i {
+  font-size: 2.8rem;
+  color: var(--ag-coral);
+}
+
+/* ---------- Responsive: 3 tamaños (móvil < 768px, tablet 768-991px, escritorio ≥ 992px) ---------- */
+@media (max-width: 767.98px) {
+  .hero-agora {
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+  .hero-agora .columnas-deco {
+    display: none;
+  }
+  .panel-marca {
+    border-radius: var(--ag-radio) var(--ag-radio) 0 0;
+  }
+  .encabezado-categoria {
+    padding: 1.5rem 1.25rem;
+  }
+  .tabla-agora {
+    font-size: 0.88rem;
+  }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .hero-agora {
+    padding: 2.5rem 2rem;
+  }
+}
