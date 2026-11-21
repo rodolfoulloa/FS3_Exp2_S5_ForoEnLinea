@@ -1,12 +1,12 @@
 {
   "info": {
     "name": "Ágora · ms-foro",
-    "description": "Microservicio de búsqueda, visualización, publicación y comentarios de temas (puerto 8082), contra Oracle Cloud.\n\nRequiere ms-usuarios en ejecución (valida autores y el rol ADMIN). Variables: autorId=3 (vale.soto), otroId=4 (mati.gamer) y adminId=1 (camila.admin), los usuarios de prueba de ms-usuarios.",
+    "description": "Microservicio de búsqueda, visualización, publicación y comentarios de temas (puerto 8082), contra Oracle Cloud.\n\nRequiere ms-usuarios en ejecución (valida autores y el rol ADMIN). Variables: autorId=3 (vale.soto), otroId=4 (mati.gamer) y adminId=1 (camila.admin), los usuarios de prueba de ms-usuarios.\n\nURL base: variable {{foroUrl}}. Use el entorno 'Ágora · Local' o 'Ágora · Nube' (postman/ en la raíz del repositorio).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
-      "key": "baseUrl",
+      "key": "foroUrl",
       "value": "http://localhost:8082"
     },
     {
@@ -60,7 +60,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/categorias"
+            "url": "{{foroUrl}}/categorias"
           }
         },
         {
@@ -78,7 +78,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/categorias/1"
+            "url": "{{foroUrl}}/categorias/1"
           }
         },
         {
@@ -96,7 +96,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/categorias/999"
+            "url": "{{foroUrl}}/categorias/999"
           }
         }
       ],
@@ -121,7 +121,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas"
+            "url": "{{foroUrl}}/temas"
           }
         },
         {
@@ -140,7 +140,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas?q=angular"
+            "url": "{{foroUrl}}/temas?q=angular"
           }
         },
         {
@@ -159,7 +159,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas?categoriaId=2"
+            "url": "{{foroUrl}}/temas?categoriaId=2"
           }
         },
         {
@@ -177,7 +177,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas?estado=BANEADO"
+            "url": "{{foroUrl}}/temas?estado=BANEADO"
           }
         },
         {
@@ -203,7 +203,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas?estado=BANEADO"
+            "url": "{{foroUrl}}/temas?estado=BANEADO"
           }
         },
         {
@@ -224,7 +224,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/1"
+            "url": "{{foroUrl}}/temas/1"
           }
         },
         {
@@ -243,7 +243,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/1"
+            "url": "{{foroUrl}}/temas/1"
           }
         },
         {
@@ -262,7 +262,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{baneadoId}}"
+            "url": "{{foroUrl}}/temas/{{baneadoId}}"
           }
         },
         {
@@ -280,7 +280,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/abc"
+            "url": "{{foroUrl}}/temas/abc"
           }
         }
       ],
@@ -314,7 +314,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas",
+            "url": "{{foroUrl}}/temas",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Corto\",\n  \"contenido\": \"Muy corto\"\n}"
@@ -341,7 +341,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/temas",
+            "url": "{{foroUrl}}/temas",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -372,7 +372,7 @@
                 "value": "999999"
               }
             ],
-            "url": "{{baseUrl}}/temas",
+            "url": "{{foroUrl}}/temas",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -407,7 +407,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas",
+            "url": "{{foroUrl}}/temas",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -438,7 +438,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "url": "{{foroUrl}}/temas/{{temaId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Intento de edición ajena del tema\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -472,7 +472,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "url": "{{foroUrl}}/temas/{{temaId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Postman y Newman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -495,7 +495,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas?autorId={{autorId}}"
+            "url": "{{foroUrl}}/temas?autorId={{autorId}}"
           }
         }
       ],
@@ -529,7 +529,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"contenido\": \"\"\n}"
@@ -563,7 +563,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"contenido\": \"Yo uso una carpeta por recurso y variables de colección para los IDs.\"\n}"
@@ -586,7 +586,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios"
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios"
           }
         },
         {
@@ -613,7 +613,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}",
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"contenido\": \"Edición no autorizada\"\n}"
@@ -644,7 +644,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}",
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"contenido\": \"Yo uso una carpeta por recurso, variables de colección y Newman en CI.\"\n}"
@@ -675,7 +675,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}/moderacion",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Intento sin permisos\"\n}"
@@ -707,7 +707,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}/moderacion",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Prueba de moderación\"\n}"
@@ -730,7 +730,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios"
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios"
           }
         },
         {
@@ -754,7 +754,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios?estado=BANEADO"
+            "url": "{{foroUrl}}/comentarios?estado=BANEADO"
           }
         },
         {
@@ -782,7 +782,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}/moderacion",
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}/moderacion",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"ACTIVO\"\n}"
@@ -809,7 +809,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/comentarios/{{comentarioId}}"
+            "url": "{{foroUrl}}/comentarios/{{comentarioId}}"
           }
         }
       ],
@@ -843,7 +843,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}/moderacion",
+            "url": "{{foroUrl}}/temas/{{temaId}}/moderacion",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"BANEADO\",\n  \"motivo\": \"Prueba de moderación de temas\"\n}"
@@ -865,7 +865,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{temaId}}"
+            "url": "{{foroUrl}}/temas/{{temaId}}"
           }
         },
         {
@@ -893,7 +893,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}/comentarios",
+            "url": "{{foroUrl}}/temas/{{temaId}}/comentarios",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"contenido\": \"¿Alguien sigue por aquí?\"\n}"
@@ -924,7 +924,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}",
+            "url": "{{foroUrl}}/temas/{{temaId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"titulo\": \"Postman: ¿cómo organizan sus colecciones?\",\n  \"contenido\": \"Quiero ordenar mis pruebas de API por carpetas y variables. ¿Qué estructura les ha funcionado?\",\n  \"categoriaId\": 1\n}"
@@ -947,7 +947,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{temaId}}/estado"
+            "url": "{{foroUrl}}/temas/{{temaId}}/estado"
           }
         },
         {
@@ -974,7 +974,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}/moderacion",
+            "url": "{{foroUrl}}/temas/{{temaId}}/moderacion",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estado\": \"ACTIVO\"\n}"
@@ -1001,7 +1001,7 @@
                 "value": "{{otroId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}"
+            "url": "{{foroUrl}}/temas/{{temaId}}"
           }
         },
         {
@@ -1024,7 +1024,7 @@
                 "value": "{{autorId}}"
               }
             ],
-            "url": "{{baseUrl}}/temas/{{temaId}}"
+            "url": "{{foroUrl}}/temas/{{temaId}}"
           }
         },
         {
@@ -1043,7 +1043,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/temas/{{temaId}}/estado"
+            "url": "{{foroUrl}}/temas/{{temaId}}/estado"
           }
         }
       ],
@@ -1070,7 +1070,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/auditoria"
+            "url": "{{foroUrl}}/auditoria"
           }
         },
         {
@@ -1089,7 +1089,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/actuator/health"
+            "url": "{{foroUrl}}/actuator/health"
           }
         }
       ]

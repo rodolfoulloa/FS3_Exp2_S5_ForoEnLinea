@@ -1,12 +1,12 @@
 {
   "info": {
     "name": "Ágora · ms-usuarios",
-    "description": "Microservicio de control de usuarios e inicio de sesión (puerto 8081), contra Oracle Cloud.\n\nEjecutar en orden con 'Run collection'. Usuarios de prueba: camila.admin / Admin#2025 (ADMIN) y vale.soto / Foro#2025 (USUARIO). Las operaciones protegidas usan el header X-Usuario-Id.",
+    "description": "Microservicio de control de usuarios e inicio de sesión (puerto 8081), contra Oracle Cloud.\n\nEjecutar en orden con 'Run collection'. Usuarios de prueba: camila.admin / Admin#2025 (ADMIN) y vale.soto / Foro#2025 (USUARIO). Las operaciones protegidas usan el header X-Usuario-Id.\n\nURL base: variable {{usuariosUrl}}. Use el entorno 'Ágora · Local' o 'Ágora · Nube' (postman/ en la raíz del repositorio).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
-      "key": "baseUrl",
+      "key": "usuariosUrl",
       "value": "http://localhost:8081"
     },
     {
@@ -67,7 +67,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/login",
+            "url": "{{usuariosUrl}}/auth/login",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuario\": \"camila.admin\",\n  \"password\": \"Admin#2025\"\n}"
@@ -95,7 +95,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/login",
+            "url": "{{usuariosUrl}}/auth/login",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuario\": \"camila.admin\",\n  \"password\": \"Incorrecta#1\"\n}"
@@ -123,7 +123,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/registro",
+            "url": "{{usuariosUrl}}/auth/registro",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Usuario Prueba\",\n  \"alias\": \"qa{{sufijo}}\",\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"password\": \"Clave2025\",\n  \"confirmacion\": \"Clave2025\",\n  \"aceptaNormas\": true\n}"
@@ -152,7 +152,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/registro",
+            "url": "{{usuariosUrl}}/auth/registro",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"N4\",\n  \"alias\": \"a b\",\n  \"email\": \"no-es-email\",\n  \"password\": \"Clave#2025\",\n  \"confirmacion\": \"Otra#2025\",\n  \"aceptaNormas\": false\n}"
@@ -182,7 +182,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/registro",
+            "url": "{{usuariosUrl}}/auth/registro",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Usuario Prueba\",\n  \"alias\": \"qa{{sufijo}}\",\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"password\": \"Prueba#2025\",\n  \"confirmacion\": \"Prueba#2025\",\n  \"aceptaNormas\": true\n}"
@@ -210,7 +210,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/registro",
+            "url": "{{usuariosUrl}}/auth/registro",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Usuario Prueba\",\n  \"alias\": \"qb{{sufijo}}\",\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"password\": \"Prueba#2025\",\n  \"confirmacion\": \"Prueba#2025\",\n  \"aceptaNormas\": true\n}"
@@ -238,7 +238,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/login",
+            "url": "{{usuariosUrl}}/auth/login",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuario\": \"qa{{sufijo}}\",\n  \"password\": \"Prueba#2025\"\n}"
@@ -268,7 +268,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/recuperar",
+            "url": "{{usuariosUrl}}/auth/recuperar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"qa{{sufijo}}@correo.cl\"\n}"
@@ -296,7 +296,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/restablecer",
+            "url": "{{usuariosUrl}}/auth/restablecer",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"codigo\": \"000000\",\n  \"nuevaPassword\": \"Nueva#2025\",\n  \"confirmacion\": \"Nueva#2025\"\n}"
@@ -323,7 +323,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/restablecer",
+            "url": "{{usuariosUrl}}/auth/restablecer",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"codigo\": \"{{codigo}}\",\n  \"nuevaPassword\": \"Nueva#2025\",\n  \"confirmacion\": \"Nueva#2025\"\n}"
@@ -350,7 +350,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/login",
+            "url": "{{usuariosUrl}}/auth/login",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuario\": \"qa{{sufijo}}@correo.cl\",\n  \"password\": \"Nueva#2025\"\n}"
@@ -379,7 +379,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}"
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}"
           }
         },
         {
@@ -407,7 +407,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Usuario Prueba Editado\",\n  \"alias\": \"qa{{sufijo}}\",\n  \"email\": \"qa{{sufijo}}@correo.cl\",\n  \"biografia\": \"Me gustan los foros de tecnología.\"\n}"
@@ -439,7 +439,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Usuario Prueba\",\n  \"alias\": \"qa{{sufijo}}\",\n  \"email\": \"correo-invalido\"\n}"
@@ -470,7 +470,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{adminId}}",
+            "url": "{{usuariosUrl}}/usuarios/{{adminId}}",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Camila Rojas\",\n  \"alias\": \"camila.admin\",\n  \"email\": \"camila@agora.cl\"\n}"
@@ -501,7 +501,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}/password",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}/password",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"actual\": \"Mala#2025\",\n  \"nueva\": \"Otra#2025\",\n  \"confirmacion\": \"Otra#2025\"\n}"
@@ -532,7 +532,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}/password",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}/password",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"actual\": \"Nueva#2025\",\n  \"nueva\": \"Cambiada#2025\",\n  \"confirmacion\": \"Cambiada#2025\"\n}"
@@ -560,7 +560,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios"
+            "url": "{{usuariosUrl}}/usuarios"
           }
         }
       ],
@@ -590,7 +590,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios"
+            "url": "{{usuariosUrl}}/usuarios"
           }
         },
         {
@@ -614,7 +614,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios?rol=ADMIN"
+            "url": "{{usuariosUrl}}/usuarios?rol=ADMIN"
           }
         },
         {
@@ -638,7 +638,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios?q=qa{{sufijo}}"
+            "url": "{{usuariosUrl}}/usuarios?q=qa{{sufijo}}"
           }
         },
         {
@@ -656,7 +656,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/usuarios"
+            "url": "{{usuariosUrl}}/usuarios"
           }
         },
         {
@@ -685,7 +685,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios",
+            "url": "{{usuariosUrl}}/usuarios",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Moderador Prueba\",\n  \"alias\": \"mod{{sufijo}}\",\n  \"email\": \"mod{{sufijo}}@agora.cl\",\n  \"password\": \"Moderar#2025\",\n  \"rol\": \"ADMIN\"\n}"
@@ -716,7 +716,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios",
+            "url": "{{usuariosUrl}}/usuarios",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"Intruso\",\n  \"alias\": \"intruso{{sufijo}}\",\n  \"email\": \"intruso{{sufijo}}@correo.cl\",\n  \"password\": \"Intruso#2025\",\n  \"rol\": \"ADMIN\"\n}"
@@ -748,7 +748,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{creadoId}}/rol",
+            "url": "{{usuariosUrl}}/usuarios/{{creadoId}}/rol",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"rol\": \"USUARIO\"\n}"
@@ -780,7 +780,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}/estado",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}/estado",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"activo\": false\n}"
@@ -808,7 +808,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/auth/login",
+            "url": "{{usuariosUrl}}/auth/login",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"usuario\": \"qa{{sufijo}}\",\n  \"password\": \"Cambiada#2025\"\n}"
@@ -839,7 +839,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}/estado",
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}/estado",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"activo\": true\n}"
@@ -862,7 +862,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/roles"
+            "url": "{{usuariosUrl}}/roles"
           }
         },
         {
@@ -885,7 +885,7 @@
                 "value": "{{adminId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{creadoId}}"
+            "url": "{{usuariosUrl}}/usuarios/{{creadoId}}"
           }
         },
         {
@@ -908,7 +908,7 @@
                 "value": "{{usuarioId}}"
               }
             ],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}"
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}"
           }
         },
         {
@@ -927,7 +927,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/usuarios/{{usuarioId}}"
+            "url": "{{usuariosUrl}}/usuarios/{{usuarioId}}"
           }
         }
       ],
@@ -954,7 +954,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/auditoria"
+            "url": "{{usuariosUrl}}/auditoria"
           }
         },
         {
@@ -973,7 +973,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/actuator/health"
+            "url": "{{usuariosUrl}}/actuator/health"
           }
         }
       ]
