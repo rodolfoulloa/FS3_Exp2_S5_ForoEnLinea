@@ -1,8 +1,19 @@
 # microservicio-arquetipo
 
-Arquetipo Maven propio (`cl.duoc.arquetipos:microservicio-arquetipo:1.0.0`) para generar microservicios **Spring Boot 3 + Java 21 + Oracle Autonomous Database**. Cada proyecto generado trae el CRUD completo de una entidad, organizado en capas y con patrones de diseño ya aplicados.
+Arquetipo Maven propio (`cl.duoc.arquetipos:microservicio-arquetipo:1.1.0`) para generar microservicios **Spring Boot 3 + Java 21 + Oracle Autonomous Database**. Cada proyecto generado trae el CRUD completo de una entidad, organizado en capas y con patrones de diseño ya aplicados.
 
-Con él se volvió a programar el microservicio de libros de la semana 1 (carpeta [`../../backend`](../../backend)).
+Lo creé en la semana 4 (repositorio `FS3_Exp1_S1`, versión 1.0.0) y en la semana 5 lo evolucioné a la **1.1.0** para el Sistema de Foros en Línea. Con él se generaron los tres microservicios de este repositorio: `ms-usuarios`, `ms-foro` y `ms-moderacion`.
+
+## Novedades de la versión 1.1.0
+
+| Cambio | Para qué |
+|---|---|
+| Nuevo parámetro `puerto` (por defecto 8080) | Cada microservicio se genera con su propio puerto (8081, 8082, 8083): en `application.properties`, en el `EXPOSE` del Dockerfile y en la colección Postman |
+| `config/CorsConfig` | Permite que el frontend en otro origen consuma la API. Los orígenes se definen con `APP_CORS_ORIGENES` |
+| Excepciones `ConflictoException` (409), `ReglaNegocioException` (400), `AccesoDenegadoException` (403) y `ServicioNoDisponibleException` (503), más el 400 por falta de un header obligatorio | Errores de negocio y de permisos, y fallas de otros microservicios, con el mismo formato JSON (`ErrorResponse`) |
+| `spring-boot-starter-actuator` con `GET /actuator/health` | Monitoreo y verificación del contenedor en Docker o en la nube |
+| `postman/<artifactId>.postman_collection.json` | Cada microservicio nace con una colección Postman del CRUD lista para importar |
+| Prueba nueva en el controlador (409) | La prueba de integración ahora ejecuta 21 pruebas sobre el proyecto generado |
 
 ## Qué genera
 
@@ -50,6 +61,7 @@ Con él se volvió a programar el microservicio de libros de la semana 1 (carpet
 | `entidad` | `Libro` | Nombre de la entidad (PascalCase). Da nombre a las clases `Libro`, `LibroService`, `LibroController`, etc. |
 | `recurso` | `libros` | Ruta REST: `/libros` |
 | `tabla` | `LIBROS` | Tabla en Oracle (`@Table(name = "LIBROS")`) |
+| `puerto` | `8081` | Puerto HTTP (opcional, por defecto `8080`) |
 
 `entidad`, `recurso` y `tabla` se validan con expresiones regulares en `archetype-metadata.xml`.
 
@@ -74,7 +86,7 @@ cd arquetipo\microservicio-arquetipo
 .\mvnw.cmd install
 ```
 
-Lo deja en el repositorio local (`~/.m2/repository/cl/duoc/arquetipos/microservicio-arquetipo/1.0.0`). Antes de instalar, ejecuta la prueba de integración.
+Lo deja en el repositorio local (`~/.m2/repository/cl/duoc/arquetipos/microservicio-arquetipo/1.1.0`). Antes de instalar, ejecuta la prueba de integración.
 
 ## Generar un microservicio
 
@@ -82,7 +94,7 @@ Lo deja en el repositorio local (`~/.m2/repository/cl/duoc/arquetipos/microservi
 mvn archetype:generate `
   -DarchetypeGroupId=cl.duoc.arquetipos `
   -DarchetypeArtifactId=microservicio-arquetipo `
-  -DarchetypeVersion=1.0.0 `
+  -DarchetypeVersion=1.1.0 `
   -DgroupId=cl.duoc -DartifactId=biblioteca -Dversion=2.0.0 `
   -Dpackage=cl.duoc.biblioteca `
   -Dentidad=Libro -Drecurso=libros -Dtabla=LIBROS `

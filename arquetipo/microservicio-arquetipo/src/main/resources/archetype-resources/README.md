@@ -31,6 +31,12 @@ ${symbol_pound}${symbol_pound} Patrones de diseño incluidos
 | Singleton | Beans de Spring (`@Service`, `@Component`, `@RestController`) |
 | Repository + DTO + Inyección de dependencias | `repository/`, `dto/`, constructores |
 
+${symbol_pound}${symbol_pound} Incluye también
+
+- `config/CorsConfig`: CORS configurable con `APP_CORS_ORIGENES`.
+- `GET /actuator/health`: estado del microservicio.
+- `postman/${artifactId}.postman_collection.json`: colección Postman del CRUD en `http://localhost:${puerto}`.
+
 ${symbol_pound}${symbol_pound} Ejecutar
 
 1. Descomprimir el wallet de Oracle en `wallet/` (no se sube a Git).

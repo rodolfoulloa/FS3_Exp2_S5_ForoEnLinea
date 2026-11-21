@@ -9,11 +9,11 @@
 
     Instalar en el repositorio local:   mvnw install
     Generar un microservicio:           mvn archetype:generate -DarchetypeGroupId=cl.duoc.arquetipos
-                                          -DarchetypeArtifactId=microservicio-arquetipo -DarchetypeVersion=1.0.0 ...
+                                          -DarchetypeArtifactId=microservicio-arquetipo -DarchetypeVersion=1.1.0 ...
   -->
   <groupId>cl.duoc.arquetipos</groupId>
   <artifactId>microservicio-arquetipo</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>maven-archetype</packaging>
 
   <name>microservicio-arquetipo</name>
