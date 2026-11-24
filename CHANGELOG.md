@@ -2,6 +2,19 @@
 
 Cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones usan [versionado semántico](https://semver.org/lang/es/).
 
+## [1.1.0] - 2026-11-23
+
+### Cambiado
+- Despliegue en la nube en un servidor propio con Docker, publicado con Cloudflare Tunnel en `https://agora.ulloa.cc` y `agora-usuarios`, `agora-foro` y `agora-moderacion.ulloa.cc`. Reemplaza a Play with Docker, dado de baja el 1 de marzo de 2026.
+- `docker-compose.cloud.yml`: dirección y puertos configurables por `.env` (`BIND`, `PUERTO_*`) y límites de memoria.
+- Guía de despliegue, README y entorno de Postman **Ágora · Nube** con las URLs públicas. Las 3 colecciones pasan contra la nube: 111 solicitudes y 189 aserciones.
+
+### Corregido
+- Los 3 microservicios copaban las ~30 sesiones de la base Oracle Always Free (pool de Hikari de 10 conexiones cada uno). Ambos compose limitan el pool a 3 conexiones por microservicio.
+
+### Eliminado
+- El guion del video sale del repositorio: es material de apoyo y no forma parte de la entrega.
+
 ## [1.0.1] - 2026-11-21
 
 ### Corregido
@@ -47,5 +60,6 @@ Cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://kee
   - Guía de despliegue en Play with Docker.
 - Entornos de Postman local y nube, guion del video y README con evidencias.
 
+[1.1.0]: https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea/releases/tag/v1.0.0

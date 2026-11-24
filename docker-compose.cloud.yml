@@ -1,52 +1,70 @@
-# Ágora · despliegue en la nube (Play with Docker u otro host con Docker)
+# Ágora · despliegue en la nube (servidor ulloa.cc u otro host con Docker)
 # Usa las imágenes ya publicadas en Docker Hub (Container Registry): no compila nada.
 #   docker compose -f docker-compose.cloud.yml up -d
-# En la instancia se necesitan solo este archivo, el .env y la carpeta wallet/.
-# La memoria de Java se limita (JAVA_TOOL_OPTIONS) porque la instancia de la nube es pequeña.
+# En el servidor se necesitan solo este archivo, el .env y la carpeta wallet/.
+# La memoria se limita (JAVA_TOOL_OPTIONS y mem_limit) porque el servidor es compartido.
+# Puertos publicados configurables por .env (BIND, PUERTO_*): en ulloa.cc se publican solo en
+# 127.0.0.1 y Cloudflare Tunnel los expone con HTTPS en agora*.ulloa.cc.
 services:
   ms-usuarios:
     image: ${DOCKERHUB_USER}/agora-ms-usuarios:${VERSION:-1.0.0}
     env_file: .env
+    # La base Always Free admite ~30 sesiones en total: 3 conexiones por microservicio
+    # (el valor por defecto de Hikari, 10, copa la base con solo 3 servicios).
     environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xss512k -XX:+UseSerialGC"
     volumes:
       - ./wallet:/app/wallet:ro
     ports:
-      - "8081:8081"
+      - "${BIND:-0.0.0.0}:${PUERTO_USUARIOS:-8081}:8081"
+    mem_limit: 512m
     restart: unless-stopped
 
   ms-foro:
     image: ${DOCKERHUB_USER}/agora-ms-foro:${VERSION:-1.0.0}
     env_file: .env
+    # La base Always Free admite ~30 sesiones en total: 3 conexiones por microservicio
+    # (el valor por defecto de Hikari, 10, copa la base con solo 3 servicios).
     environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xss512k -XX:+UseSerialGC"
       MS_USUARIOS_URL: http://ms-usuarios:8081
     volumes:
       - ./wallet:/app/wallet:ro
     ports:
-      - "8082:8082"
+      - "${BIND:-0.0.0.0}:${PUERTO_FORO:-8082}:8082"
     depends_on:
       - ms-usuarios
+    mem_limit: 512m
     restart: unless-stopped
 
   ms-moderacion:
     image: ${DOCKERHUB_USER}/agora-ms-moderacion:${VERSION:-1.0.0}
     env_file: .env
+    # La base Always Free admite ~30 sesiones en total: 3 conexiones por microservicio
+    # (el valor por defecto de Hikari, 10, copa la base con solo 3 servicios).
     environment:
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
       JAVA_TOOL_OPTIONS: "-Xmx256m -Xss512k -XX:+UseSerialGC"
       MS_USUARIOS_URL: http://ms-usuarios:8081
       MS_FORO_URL: http://ms-foro:8082
     volumes:
       - ./wallet:/app/wallet:ro
     ports:
-      - "8083:8083"
+      - "${BIND:-0.0.0.0}:${PUERTO_MODERACION:-8083}:8083"
     depends_on:
       - ms-usuarios
       - ms-foro
+    mem_limit: 512m
     restart: unless-stopped
 
   frontend:
     image: ${DOCKERHUB_USER}/agora-frontend:${VERSION:-1.0.0}
     ports:
-      - "80:80"
+      - "${BIND:-0.0.0.0}:${PUERTO_FRONTEND:-80}:80"
+    mem_limit: 64m
     restart: unless-stopped

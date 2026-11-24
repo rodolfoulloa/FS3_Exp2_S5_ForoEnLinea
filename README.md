@@ -6,10 +6,11 @@ DSY2205 Desarrollo Full Stack III · Experiencia 2 · Semana 5 · Actividad suma
 
 - **3 microservicios** Spring Boot generados con un **arquetipo Maven propio**, con CRUD sobre **Oracle Autonomous Database** y probados con **Postman**.
 - Un **frontend Angular 22.3 + Bootstrap 5.3** responsive. Funciona por separado, con datos en arreglos, como pide la pauta.
-- **Docker**: imágenes publicadas en Docker Hub (Container Registry) y desplegadas en la nube (Play with Docker).
+- **Docker**: imágenes publicadas en Docker Hub (Container Registry) y desplegadas en la nube en **https://agora.ulloa.cc** (servidor propio con Docker y HTTPS de Cloudflare; Play with Docker fue dado de baja el 1 de marzo de 2026).
 
 | Versión | Fecha | Contenido |
 |---|---|---|
+| `v1.1.0` | 2026-11-23 | Despliegue en la nube en [agora.ulloa.cc](https://agora.ulloa.cc) y pool de conexiones acotado para Oracle Always Free |
 | `v1.0.1` | 2026-11-21 | Imágenes publicadas en [Docker Hub](https://hub.docker.com/u/rodolfoulloa) y corrección del script de publicación |
 | `v1.0.0` | 2026-11-21 | Entrega de la semana 5 (ver [CHANGELOG](CHANGELOG.md)) |
 | `arquetipo-1.1.0` | 2026-11-21 | Arquetipo Maven usado para generar los 3 microservicios |
@@ -63,8 +64,8 @@ flowchart LR
 | 5 | Lógica de negocio del frontend con 2 roles y arreglos | 20 | Facades con las mismas reglas de los microservicios sobre arreglos (`data/datos-iniciales.ts` y repositorios en memoria); guards por rol; panel exclusivo de ADMIN |
 | 6 | 3 microservicios Spring Boot con el arquetipo y Postman | 20 | `ms-usuarios`, `ms-foro` y `ms-moderacion`: **111 solicitudes y 189 aserciones** en Postman, todas aprobadas |
 | 7 | Microservicios integrados con Oracle Cloud | 12 | Los 3 microservicios trabajan contra Oracle Autonomous Database (7 tablas `FORO_*`) con wallet mTLS |
-| 8 | Ejecución en el Cloud de Docker | 16 | Imágenes en Docker Hub y despliegue con `docker-compose.cloud.yml` en Play with Docker ([guía](docs/despliegue-nube.md)) |
-| 9 | Presentación en video | 7 | [Guion de 7 a 10 minutos](docs/guion-video.md) que cubre cada punto de la pauta |
+| 8 | Ejecución en el Cloud de Docker | 16 | Imágenes en Docker Hub y despliegue con `docker-compose.cloud.yml` en un servidor propio, con URLs públicas en `agora*.ulloa.cc` ([guía](docs/despliegue-nube.md)) |
+| 9 | Presentación en video | 7 | Video de 7 a 10 minutos en Kaltura: despliegue en la nube, URL pública, conexión con Oracle Cloud y las funcionalidades del frontend y del backend |
 
 ## Estructura del repositorio
 
@@ -80,7 +81,7 @@ FS3_Exp2_S5_ForoEnLinea/
 ├── docker-compose.yml                    # Construye y levanta todo desde el código
 ├── docker-compose.cloud.yml              # Levanta las imágenes de Docker Hub (nube)
 ├── scripts/publicar-imagenes.ps1         # Publica las imágenes en Docker Hub
-├── docs/                                 # Guía de despliegue, guion del video y evidencias
+├── docs/                                 # Guía de despliegue y evidencias
 ├── .env.example                          # Variables de entorno (el .env y el wallet no se suben)
 └── CHANGELOG.md
 ```
@@ -203,7 +204,7 @@ Oracle Autonomous Database (FS3DB) en Oracle Cloud, con conexión por **wallet m
 | [`ms-foro`](ms-foro/postman/ms-foro.postman_collection.json) | 41 | 69 | Categorías · Búsqueda y visualización · Publicación · Comentarios · Moderación · Observer |
 | [`ms-moderacion`](ms-moderacion/postman/ms-moderacion.postman_collection.json) | 36 | 61 | Preparación en ms-foro · Reportes · Moderación por el ADMIN · Panel · Limpieza |
 
-- **Entornos** en [`postman/`](postman): **Ágora · Local** (`localhost:8081` a `8083`) y **Ágora · Nube** (URLs públicas de Play with Docker). Las colecciones usan `{{usuariosUrl}}`, `{{foroUrl}}` y `{{moderacionUrl}}`.
+- **Entornos** en [`postman/`](postman): **Ágora · Local** (`localhost:8081` a `8083`) y **Ágora · Nube** (`https://agora-usuarios.ulloa.cc`, `agora-foro` y `agora-moderacion`). Las colecciones usan `{{usuariosUrl}}`, `{{foroUrl}}` y `{{moderacionUrl}}`.
 - Cada colección genera datos únicos y limpia lo que crea, así que se puede ejecutar muchas veces contra Oracle.
 
 ```powershell
@@ -219,7 +220,14 @@ npx newman run ms-foro\postman\ms-foro.postman_collection.json -e postman\agora-
 | `scripts/publicar-imagenes.ps1` | Construye y publica las 4 imágenes en **Docker Hub** (Container Registry): [`rodolfoulloa/agora-*`](https://hub.docker.com/u/rodolfoulloa) |
 | `docker-compose.cloud.yml` | Ejecuta las imágenes de Docker Hub en la nube, con memoria acotada para instancias pequeñas |
 
-El paso a paso para publicar en Docker Hub y ejecutar en **Play with Docker** con URLs públicas está en [docs/despliegue-nube.md](docs/despliegue-nube.md). Las imágenes no contienen credenciales: el wallet se monta como volumen y la clave se entrega por `.env`.
+| Componente | URL pública |
+|---|---|
+| Frontend | https://agora.ulloa.cc |
+| ms-usuarios | https://agora-usuarios.ulloa.cc |
+| ms-foro | https://agora-foro.ulloa.cc |
+| ms-moderacion | https://agora-moderacion.ulloa.cc |
+
+La guía del curso usa Play with Docker, pero ese servicio fue dado de baja el 1 de marzo de 2026. Por eso las imágenes de Docker Hub se ejecutan en un servidor propio con Docker, publicado en internet mediante Cloudflare Tunnel (HTTPS y sin abrir puertos). El paso a paso para publicar en Docker Hub y ejecutar en el servidor **ulloa.cc** con URLs públicas está en [docs/despliegue-nube.md](docs/despliegue-nube.md). Las imágenes no contienen credenciales: el wallet se monta como volumen y la clave se entrega por `.env`.
 
 ## Git: Git Flow y Trunk Based Development
 
@@ -405,4 +413,4 @@ cd frontend;   npx ng test --watch=false
 
 - **ZIP** con el código fuente: frontend Angular, los 3 microservicios, los scripts de Oracle (`sql/`) y el código fuente del arquetipo. Sin `node_modules`, `target`, wallet ni credenciales.
 - **Repositorio Git:** https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea
-- **Video** de 7 a 10 minutos en Kaltura (guion en [docs/guion-video.md](docs/guion-video.md)).
+- **Video** de 7 a 10 minutos en Kaltura.
