@@ -10,6 +10,7 @@ DSY2205 Desarrollo Full Stack III · Experiencia 2 · Semana 5 · Actividad suma
 
 | Versión | Fecha | Contenido |
 |---|---|---|
+| `v1.1.0` | 2026-11-23 | Despliegue en la nube en [agora.ulloa.cc](https://agora.ulloa.cc) y pool de conexiones acotado para Oracle Always Free |
 | `v1.0.1` | 2026-11-21 | Imágenes publicadas en [Docker Hub](https://hub.docker.com/u/rodolfoulloa) y corrección del script de publicación |
 | `v1.0.0` | 2026-11-21 | Entrega de la semana 5 (ver [CHANGELOG](CHANGELOG.md)) |
 | `arquetipo-1.1.0` | 2026-11-21 | Arquetipo Maven usado para generar los 3 microservicios |
@@ -64,7 +65,7 @@ flowchart LR
 | 6 | 3 microservicios Spring Boot con el arquetipo y Postman | 20 | `ms-usuarios`, `ms-foro` y `ms-moderacion`: **111 solicitudes y 189 aserciones** en Postman, todas aprobadas |
 | 7 | Microservicios integrados con Oracle Cloud | 12 | Los 3 microservicios trabajan contra Oracle Autonomous Database (7 tablas `FORO_*`) con wallet mTLS |
 | 8 | Ejecución en el Cloud de Docker | 16 | Imágenes en Docker Hub y despliegue con `docker-compose.cloud.yml` en un servidor propio, con URLs públicas en `agora*.ulloa.cc` ([guía](docs/despliegue-nube.md)) |
-| 9 | Presentación en video | 7 | [Guion de 7 a 10 minutos](docs/guion-video.md) que cubre cada punto de la pauta |
+| 9 | Presentación en video | 7 | Video de 7 a 10 minutos en Kaltura: despliegue en la nube, URL pública, conexión con Oracle Cloud y las funcionalidades del frontend y del backend |
 
 ## Estructura del repositorio
 
@@ -80,7 +81,7 @@ FS3_Exp2_S5_ForoEnLinea/
 ├── docker-compose.yml                    # Construye y levanta todo desde el código
 ├── docker-compose.cloud.yml              # Levanta las imágenes de Docker Hub (nube)
 ├── scripts/publicar-imagenes.ps1         # Publica las imágenes en Docker Hub
-├── docs/                                 # Guía de despliegue, guion del video y evidencias
+├── docs/                                 # Guía de despliegue y evidencias
 ├── .env.example                          # Variables de entorno (el .env y el wallet no se suben)
 └── CHANGELOG.md
 ```
@@ -412,4 +413,4 @@ cd frontend;   npx ng test --watch=false
 
 - **ZIP** con el código fuente: frontend Angular, los 3 microservicios, los scripts de Oracle (`sql/`) y el código fuente del arquetipo. Sin `node_modules`, `target`, wallet ni credenciales.
 - **Repositorio Git:** https://github.com/rodolfoulloa/FS3_Exp2_S5_ForoEnLinea
-- **Video** de 7 a 10 minutos en Kaltura (guion en [docs/guion-video.md](docs/guion-video.md)).
+- **Video** de 7 a 10 minutos en Kaltura.
