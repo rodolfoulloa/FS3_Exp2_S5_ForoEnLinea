@@ -10,6 +10,7 @@ DSY2205 Desarrollo Full Stack III · Experiencia 2 · Semana 5 · Actividad suma
 
 | Versión | Fecha | Contenido |
 |---|---|---|
+| `v1.1.0` | 2026-11-23 | Despliegue en la nube en [agora.ulloa.cc](https://agora.ulloa.cc) y pool de conexiones acotado para Oracle Always Free |
 | `v1.0.1` | 2026-11-21 | Imágenes publicadas en [Docker Hub](https://hub.docker.com/u/rodolfoulloa) y corrección del script de publicación |
 | `v1.0.0` | 2026-11-21 | Entrega de la semana 5 (ver [CHANGELOG](CHANGELOG.md)) |
 | `arquetipo-1.1.0` | 2026-11-21 | Arquetipo Maven usado para generar los 3 microservicios |
